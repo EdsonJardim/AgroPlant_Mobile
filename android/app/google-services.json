@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "856607593866",
+    "project_id": "agroplant2-2648d",
+    "storage_bucket": "agroplant2-2648d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:856607593866:android:4d25500eb6a63e6da62473",
+        "android_client_info": {
+          "package_name": "com.example.agroplant_mobile"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "856607593866-vtri6ebtnfrptpknrjksd9653vp5q6lg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.agroplant_mobile",
+            "certificate_hash": "eb7ec39dbffad15884e0c0549cab1787f14d1ef4"
+          }
+        },
+        {
+          "client_id": "856607593866-r8bkjf2lho8b2er9ou59md3e56r7etgv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDMnuiiRWfh4r2OqHMrfkV1QFZEztZTqxw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "856607593866-r8bkjf2lho8b2er9ou59md3e56r7etgv.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "856607593866-m5b2nmmkkin1h6jnvsj5no30q40g941m.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.agroplantMobile"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

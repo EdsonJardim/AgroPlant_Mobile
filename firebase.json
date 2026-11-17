@@ -1,0 +1,39 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "agroplant2-2648d",
+          "appId": "1:856607593866:android:4d25500eb6a63e6da62473",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "agroplant2-2648d",
+          "configurations": {
+            "android": "1:856607593866:android:4d25500eb6a63e6da62473",
+            "ios": "1:856607593866:ios:65303c33b6dc04aea62473",
+            "macos": "1:856607593866:ios:65303c33b6dc04aea62473",
+            "web": "1:856607593866:web:466b64385dc390a3a62473",
+            "windows": "1:856607593866:web:c5043419e5af9b46a62473"
+          }
+        }
+      }
+    }
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "disallowLegacyRuntimeConfig": true,
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ]
+    }
+  ]
+}
