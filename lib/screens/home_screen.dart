@@ -8,8 +8,11 @@ import 'planilhas_screen.dart';
 import 'sobre_screen.dart';
 import 'configuracoes_screen.dart';
 import 'minha_propriedade_screen.dart';
+import 'admin_screen.dart';
+
 import '../models/propriedade.dart';
 import '../services/propriedade_service.dart';
+import '../services/admin_service.dart';
 import '../widgets/agroplant_app_bar.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -27,8 +30,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final ScrollController _scrollController = ScrollController();
   final PropriedadeService _propriedadeService = PropriedadeService();
+  final AdminService _adminService = AdminService();
+
+  late Future<String?> _perfilAdminFuture;
 
   String? _propriedadeSelecionadaId;
+
+  @override
+  void initState() {
+    super.initState();
+    _perfilAdminFuture = _adminService.consultarPerfilAdmin();
+  }
 
   void _recarregarTela() {
     if (_scrollController.hasClients) {
@@ -51,6 +63,12 @@ class _HomeScreenState extends State<HomeScreen> {
   void _abrirPlanilhas() {
     Navigator.of(context)
         .push(MaterialPageRoute(builder: (context) => const PlanilhasScreen()));
+  }
+
+  void _abrirPainelAdmin(String perfil) {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => AdminScreen(perfilAdmin: perfil)),
+    );
   }
 
   Widget _construirCartaoPropriedade({
@@ -349,6 +367,22 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: corAppBar,
         foregroundColor: escuro ? Colors.white : verde,
         actions: [
+          FutureBuilder<String?>(
+            future: _perfilAdminFuture,
+            builder: (context, snapshot) {
+              final perfil = snapshot.data;
+
+              if (perfil == null) {
+                return const SizedBox.shrink();
+              }
+
+              return IconButton(
+                tooltip: 'Painel administrativo',
+                onPressed: () => _abrirPainelAdmin(perfil),
+                icon: const Icon(Icons.admin_panel_settings_outlined, size: 28),
+              );
+            },
+          ),
           IconButton(
             tooltip: 'Sobre a equipe',
             onPressed: () {

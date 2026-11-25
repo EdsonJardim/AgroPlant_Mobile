@@ -16,6 +16,29 @@ class AuthService {
         .doc('autenticacao');
   }
 
+  // Verifica se a conta está ativa no Firestore.
+  Future<void> _verificarContaAtiva(User usuario) async {
+    final documento = await _firestore
+        .collection('account_status')
+        .doc(usuario.uid)
+        .get();
+
+    // Se existir um registro de status, ele precisa estar ativo.
+    if (documento.exists) {
+      final dados = documento.data();
+
+      if (dados == null || dados['ativo'] != true) {
+        await logout();
+
+        throw FirebaseAuthException(
+          code: 'account-disabled',
+          message:
+              'Sua conta está desativada. Entre em contato com o administrador.',
+        );
+      }
+    }
+  }
+
   Future<void> _garantirConfiguracao(String uid) async {
     final referencia = _referenciaAutenticacao(uid);
     final documento = await referencia.get();
@@ -26,6 +49,57 @@ class AuthService {
         'googleDesativado': false,
         'atualizadoEm': FieldValue.serverTimestamp(),
       });
+    }
+  }
+
+  // Cria ou atualiza o perfil privado e o diretório público.
+  Future<void> _garantirPerfil(User usuario) async {
+    final nome = usuario.displayName ?? 'Usuário';
+    final email = usuario.email ?? '';
+
+    // Documento privado do usuário.
+    final referencia = _firestore
+        .collection('users')
+        .doc(usuario.uid);
+
+    final documento = await referencia.get();
+
+    final dados = {
+      'nome': nome,
+      'email': email,
+      'atualizadoEm': FieldValue.serverTimestamp(),
+    };
+
+    if (!documento.exists) {
+      await referencia.set({
+        ...dados,
+        'ativo': true,
+        'criadoEm': FieldValue.serverTimestamp(),
+      });
+    } else {
+      await referencia.update(dados);
+    }
+
+    // Documento público para o painel administrativo.
+    final referenciaPublica = _firestore
+        .collection('users_public')
+        .doc(usuario.uid);
+
+    final documentoPublico = await referenciaPublica.get();
+
+    final dadosPublicos = {
+      'nome': nome,
+      'email': email,
+      'atualizadoEm': FieldValue.serverTimestamp(),
+    };
+
+    if (!documentoPublico.exists) {
+      await referenciaPublica.set({
+        ...dadosPublicos,
+        'criadoEm': FieldValue.serverTimestamp(),
+      });
+    } else {
+      await referenciaPublica.update(dadosPublicos);
     }
   }
 
@@ -124,7 +198,8 @@ class AuthService {
       if (metodos[outroMetodo] != true) {
         throw FirebaseAuthException(
           code: 'last-provider',
-          message: 'Não é possível desativar seu único método de acesso.',
+          message:
+              'Não é possível desativar seu único método de acesso.',
         );
       }
     }
@@ -169,7 +244,8 @@ class AuthService {
     if (await _quantidadeMetodosVinculados(usuario) <= 1) {
       throw FirebaseAuthException(
         code: 'last-provider',
-        message: 'Não é possível excluir seu único método de acesso.',
+        message:
+            'Não é possível excluir seu único método de acesso.',
       );
     }
 
@@ -208,6 +284,7 @@ class AuthService {
     }
   }
 
+  // Login com e-mail e senha.
   Future<User?> login({
     required String email,
     required String senha,
@@ -220,15 +297,22 @@ class AuthService {
     final usuario = credencial.user;
 
     if (usuario != null) {
+      // Primeiro verifica se a conta está ativa.
+      await _verificarContaAtiva(usuario);
+
+      // Depois verifica se o método de login está ativo.
       await verificarMetodoAtivo(
         usuario: usuario,
         metodo: 'email',
       );
+
+      await _garantirPerfil(usuario);
     }
 
     return usuario;
   }
 
+  // Cadastro com e-mail e senha.
   Future<User?> cadastrar({
     required String nome,
     required String email,
@@ -244,12 +328,21 @@ class AuthService {
     if (usuario != null) {
       await usuario.updateDisplayName(nome);
       await usuario.reload();
-      await _garantirConfiguracao(usuario.uid);
+
+      final usuarioAtualizado = _auth.currentUser;
+
+      if (usuarioAtualizado != null) {
+        await _verificarContaAtiva(usuarioAtualizado);
+
+        await _garantirConfiguracao(usuarioAtualizado.uid);
+        await _garantirPerfil(usuarioAtualizado);
+      }
     }
 
     return _auth.currentUser;
   }
 
+  // Login com Google.
   Future<User?> loginComGoogle() async {
     final GoogleSignIn googleSignIn = GoogleSignIn.instance;
 
@@ -270,15 +363,22 @@ class AuthService {
     final usuario = resultado.user;
 
     if (usuario != null) {
+      // Primeiro verifica se a conta está ativa.
+      await _verificarContaAtiva(usuario);
+
+      // Depois verifica se o método Google está ativo.
       await verificarMetodoAtivo(
         usuario: usuario,
         metodo: 'google',
       );
+
+      await _garantirPerfil(usuario);
     }
 
     return usuario;
   }
 
+  // Encerrar sessão.
   Future<void> logout() async {
     await _auth.signOut();
 

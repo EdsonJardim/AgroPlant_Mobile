@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../services/auth_service.dart';
 import 'login_screen.dart';
 import '../widgets/agroplant_app_bar.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class PerfilScreen extends StatefulWidget {
   const PerfilScreen({super.key});
@@ -221,6 +222,10 @@ class _PerfilScreenState extends State<PerfilScreen> {
       );
   }
 
+  // ============================================================
+  // EDITAR NOME
+  // ============================================================
+
   Future<void> _editarNome() async {
     final usuario = _usuario;
     if (usuario == null) return;
@@ -301,6 +306,31 @@ class _PerfilScreenState extends State<PerfilScreen> {
     try {
       await usuario.updateDisplayName(nome);
       await usuario.reload();
+
+      final usuarioAtualizado = FirebaseAuth.instance.currentUser;
+
+      if (usuarioAtualizado != null) {
+        final nomeAtualizado = usuarioAtualizado.displayName ?? nome;
+
+        // Atualiza o documento privado do usuário.
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(usuarioAtualizado.uid)
+            .update({
+          'nome': nomeAtualizado,
+          'atualizadoEm': FieldValue.serverTimestamp(),
+        });
+
+        // Mantém o diretório público sincronizado para o painel administrativo.
+        await FirebaseFirestore.instance
+            .collection('users_public')
+            .doc(usuarioAtualizado.uid)
+            .set({
+          'nome': nomeAtualizado,
+          'email': usuarioAtualizado.email ?? '',
+          'atualizadoEm': FieldValue.serverTimestamp(),
+        }, SetOptions(merge: true));
+      }
 
       if (!mounted) return;
 
