@@ -1,6 +1,6 @@
 # 🌱 AgroPlant Mobile
 
-Aplicativo mobile desenvolvido em Flutter com o objetivo de auxiliar no gerenciamento e acompanhamento de propriedades agrícolas, oferecendo recursos de autenticação, informações meteorológicas, gerenciamento de preferências e notificações.
+Aplicativo mobile desenvolvido em Flutter com o objetivo de auxiliar no gerenciamento e acompanhamento de propriedades agrícolas, oferecendo recursos de autenticação, informações meteorológicas, gerenciamento de usuários, administração, preferências e notificações.
 
 O AgroPlant busca reunir ferramentas úteis para facilitar o acompanhamento das propriedades rurais e contribuir para uma gestão agrícola mais organizada.
 
@@ -10,25 +10,49 @@ O AgroPlant busca reunir ferramentas úteis para facilitar o acompanhamento das 
 
 O **AgroPlant Mobile** é um aplicativo desenvolvido utilizando Flutter e Firebase, com integração a serviços externos para disponibilizar informações meteorológicas de acordo com a localização das propriedades cadastradas.
 
-O projeto foi desenvolvido com foco em uma interface intuitiva, organização do código, armazenamento de dados em nuvem e compatibilidade com dispositivos Android e iOS.
+O projeto foi desenvolvido com foco em uma interface intuitiva, organização do código, armazenamento de dados em nuvem, segurança no acesso às informações e compatibilidade com dispositivos Android e iOS.
 
 ## ✨ Funcionalidades implementadas
 
 ### 🔐 Autenticação e gerenciamento de usuários
+
 - Cadastro de usuários com Firebase Authentication.
 - Login com e-mail e senha.
 - Autenticação com Google Sign-In.
 - Recuperação de senha por e-mail utilizando Firebase Authentication.
 - Logout da conta.
-- Gerenciamento de provedores de autenticação.
+- Gerenciamento dos provedores de autenticação.
+- Possibilidade de desativar, reativar ou excluir métodos de acesso vinculados.
 - Gerenciamento das configurações de autenticação do usuário.
 
+### 👥 Painel administrativo
+
+- Painel exclusivo para gerenciamento administrativo.
+- Listagem de usuários cadastrados.
+- Pesquisa de usuários por nome ou e-mail.
+- Visualização da quantidade de usuários ativos e inativos.
+- Ativação e desativação de contas de usuários.
+- Gerenciamento dos administradores da equipe.
+- Cadastro de usuários como administradores.
+- Ativação e desativação de administradores.
+- Remoção de administradores da equipe.
+- Identificação do administrador principal.
+- Proteção contra desativação ou remoção do administrador principal.
+- Controle de permissões de acordo com o perfil administrativo.
+
+**Níveis de acesso administrativo:**
+
+- **Super administrador:** responsável pelo gerenciamento da equipe administrativa e pelas operações administrativas com privilégios superiores.
+- **Administrador da equipe:** possui acesso às funcionalidades administrativas permitidas pelas regras de segurança do projeto.
+
 ### 🌾 Propriedades agrícolas
+
 - Funcionalidades de gerenciamento e acompanhamento de propriedades.
 - Utilização de coordenadas geográficas associadas às propriedades.
 - Integração da localização com os recursos meteorológicos.
 
 ### 🌦️ Informações meteorológicas
+
 - Integração com a API Open-Meteo.
 - Consulta de informações meteorológicas utilizando as coordenadas da propriedade.
 - Exibição de informações climáticas.
@@ -36,12 +60,20 @@ O projeto foi desenvolvido com foco em uma interface intuitiva, organização do
 - Interface adaptada ao tema claro e escuro.
 
 ### 👤 Perfil do usuário
-- Tela de perfil.
+
+- Tela de perfil personalizada.
 - Exibição das informações da conta.
-- Suporte à seleção de imagens utilizando Image Picker.
-- Integração com Firebase Authentication.
+- Edição do nome do usuário.
+- Sincronização das informações do perfil com o Cloud Firestore.
+- Seleção de imagem de perfil utilizando Image Picker.
+- Remoção da imagem de perfil.
+- Armazenamento local da imagem selecionada.
+- Redefinição de senha por e-mail.
+- Gerenciamento dos métodos de acesso vinculados.
+- Opção de sair da conta.
 
 ### ⚙️ Configurações
+
 - Gerenciamento das preferências do usuário.
 - Ativação e desativação das notificações.
 - Alternância entre tema claro e escuro.
@@ -51,6 +83,7 @@ O projeto foi desenvolvido com foco em uma interface intuitiva, organização do
 - Exibição do e-mail cadastrado.
 
 ### 🔔 Sistema de notificações
+
 - Integração com Firebase Cloud Messaging (FCM).
 - Solicitação de permissão para notificações.
 - Geração e registro do token FCM do dispositivo.
@@ -80,7 +113,7 @@ O projeto foi desenvolvido com foco em uma interface intuitiva, organização do
 | Geolocator | Recursos de localização |
 | Flutter Map | Exibição de mapas |
 | LatLong2 | Coordenadas geográficas |
-| FL Chart / gráficos | Visualização de dados meteorológicos |
+| FL Chart | Visualização de dados meteorológicos |
 | Image Picker | Seleção de imagens |
 | Shared Preferences | Armazenamento local de preferências |
 | HTTP | Requisições HTTP |
@@ -101,6 +134,8 @@ O aplicativo utiliza uma identidade visual baseada em elementos relacionados ao 
 
 O aplicativo possui suporte a tema claro e tema escuro, permitindo que o usuário escolha sua preferência.
 
+As telas administrativas também acompanham o tema selecionado, proporcionando uma experiência visual consistente em todo o aplicativo.
+
 ---
 
 ## 🔥 Integração com Firebase
@@ -108,14 +143,14 @@ O aplicativo possui suporte a tema claro e tema escuro, permitindo que o usuári
 O projeto utiliza os seguintes serviços:
 
 - **Firebase Authentication:** gerenciamento de contas e autenticação.
-- **Cloud Firestore:** armazenamento das informações e preferências dos usuários.
+- **Cloud Firestore:** armazenamento das informações, preferências, dados administrativos e registros dos dispositivos.
 - **Firebase Cloud Messaging:** gerenciamento e recebimento de notificações.
 
 ### Organização dos dados no Firestore
 
 As configurações dos usuários são organizadas por meio de documentos associados ao identificador de autenticação.
 
-Exemplo de organização:
+**Dados privados dos usuários:**
 
 ```text
 users/
@@ -132,17 +167,51 @@ users/
                 └── atualizadoEm
 ```
 
-As preferências de notificações são armazenadas em:
+**Diretório público de usuários:**
+
+```text
+users_public/
+ └── UID_DO_USUARIO/
+      ├── nome
+      ├── email
+      ├── criadoEm
+      └── atualizadoEm
+```
+
+**Administradores:**
+
+```text
+admins/
+ └── UID_DO_ADMINISTRADOR/
+      ├── nome
+      ├── email
+      ├── role
+      └── ativo
+```
+
+Os perfis administrativos utilizam os campos `role` e `ativo` para identificar o nível de acesso e a situação do administrador.
+
+**Controle de situação das contas:**
+
+```text
+account_status/
+ └── UID_DO_USUARIO/
+      └── ativo
+```
+
+**Preferências de notificações:**
 
 ```text
 users/{uid}/configuracoes/preferencias
 ```
 
-Os dispositivos registrados para receber notificações são armazenados em:
+**Dispositivos registrados para receber notificações:**
 
 ```text
 users/{uid}/dispositivos/{id}
 ```
+
+As operações administrativas são protegidas por regras de segurança do Cloud Firestore, respeitando os níveis de acesso definidos no projeto.
 
 ---
 
@@ -260,6 +329,7 @@ A integração com Firebase Cloud Messaging já foi implementada e testada no An
 Atualmente, o aplicativo consegue registrar o dispositivo no Firestore e receber notificações enviadas pelo Firebase Console.
 
 **Funcionalidades futuras:**
+
 - Alertas meteorológicos automáticos.
 - Avisos sobre mudanças climáticas.
 - Lembretes automáticos de atividades agrícolas.
@@ -282,10 +352,14 @@ O AgroPlant continua em desenvolvimento. Entre as melhorias previstas estão:
 
 ---
 
-## 👨‍💻 Desenvolvimento e os desenvolvidores do projeto
+## 👨‍💻 Desenvolvimento e desenvolvedores do projeto
 
 Projeto desenvolvido com Flutter e Firebase, com foco em soluções digitais para o agronegócio.
 
-*EDSON EDUARDO SOARES JARDIM, *ANDRÉ LUIZ ALVES E *RAFAELA PEREIRA PAES 
+**Desenvolvedores:**
+
+- Edson Eduardo Soares Jardim
+- André Luis Alves
+- Rafaela Paes Pereira
 
 **AgroPlant Mobile — Tecnologia a favor do campo!** 🌱
