@@ -4,11 +4,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../services/auth_service.dart';
 import 'login_screen.dart';
 import '../widgets/agroplant_app_bar.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class PerfilScreen extends StatefulWidget {
   const PerfilScreen({super.key});
@@ -32,8 +32,15 @@ class _PerfilScreenState extends State<PerfilScreen> {
   String? _caminhoFoto;
   bool _carregandoFoto = false;
 
-  Map<String, bool> _metodosVinculados = {'email': false, 'google': false};
-  Map<String, bool> _metodosDesativados = {'email': false, 'google': false};
+  Map<String, bool> _metodosVinculados = {
+    'email': false,
+    'google': false,
+  };
+
+  Map<String, bool> _metodosDesativados = {
+    'email': false,
+    'google': false,
+  };
 
   bool _carregandoMetodos = true;
 
@@ -141,7 +148,9 @@ class _PerfilScreenState extends State<PerfilScreen> {
       backgroundColor: _corCartao,
       showDragHandle: true,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(28),
+        ),
       ),
       builder: (context) {
         return SafeArea(
@@ -192,7 +201,9 @@ class _PerfilScreenState extends State<PerfilScreen> {
                       label: const Text('Remover foto'),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: Colors.red.shade400,
-                        side: BorderSide(color: Colors.red.shade400),
+                        side: BorderSide(
+                          color: Colors.red.shade400,
+                        ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14),
                         ),
@@ -221,10 +232,6 @@ class _PerfilScreenState extends State<PerfilScreen> {
         ),
       );
   }
-
-  // ============================================================
-  // EDITAR NOME
-  // ============================================================
 
   Future<void> _editarNome() async {
     final usuario = _usuario;
@@ -258,7 +265,10 @@ class _PerfilScreenState extends State<PerfilScreen> {
             decoration: InputDecoration(
               labelText: 'Nome completo',
               labelStyle: TextStyle(color: _corTextoSecundario),
-              prefixIcon: Icon(Icons.person_outline, color: _corTexto),
+              prefixIcon: Icon(
+                Icons.person_outline,
+                color: _corTexto,
+              ),
               filled: true,
               fillColor: _corFundo,
               border: OutlineInputBorder(
@@ -310,9 +320,9 @@ class _PerfilScreenState extends State<PerfilScreen> {
       final usuarioAtualizado = FirebaseAuth.instance.currentUser;
 
       if (usuarioAtualizado != null) {
-        final nomeAtualizado = usuarioAtualizado.displayName ?? nome;
+        final nomeAtualizado =
+            usuarioAtualizado.displayName ?? nome;
 
-        // Atualiza o documento privado do usuário.
         await FirebaseFirestore.instance
             .collection('users')
             .doc(usuarioAtualizado.uid)
@@ -321,7 +331,6 @@ class _PerfilScreenState extends State<PerfilScreen> {
           'atualizadoEm': FieldValue.serverTimestamp(),
         });
 
-        // Mantém o diretório público sincronizado para o painel administrativo.
         await FirebaseFirestore.instance
             .collection('users_public')
             .doc(usuarioAtualizado.uid)
@@ -350,7 +359,9 @@ class _PerfilScreenState extends State<PerfilScreen> {
     }
 
     try {
-      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      await FirebaseAuth.instance.sendPasswordResetEmail(
+        email: email,
+      );
       _mensagem('Enviamos um link para redefinir sua senha.');
     } on FirebaseAuthException catch (e) {
       if (e.code == 'invalid-email') {
@@ -370,7 +381,9 @@ class _PerfilScreenState extends State<PerfilScreen> {
       if (!mounted) return;
 
       Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => const LoginScreen()),
+        MaterialPageRoute(
+          builder: (context) => const LoginScreen(),
+        ),
         (route) => false,
       );
     } catch (e) {
@@ -383,7 +396,8 @@ class _PerfilScreenState extends State<PerfilScreen> {
       final usuario = _usuario;
       if (usuario == null) return;
 
-      final vinculados = await _authService.consultarMetodosVinculados();
+      final vinculados =
+          await _authService.consultarMetodosVinculados();
 
       final emailDesativado = vinculados['email'] == true
           ? await _authService.metodoDesativado(
@@ -501,7 +515,9 @@ class _PerfilScreenState extends State<PerfilScreen> {
       child: ElevatedButton.icon(
         onPressed: () => Navigator.pop(context, metodo),
         icon: Icon(
-          metodo == 'email' ? Icons.email_outlined : Icons.g_mobiledata,
+          metodo == 'email'
+              ? Icons.email_outlined
+              : Icons.g_mobiledata,
           size: 30,
         ),
         label: Text(_nomeMetodo(metodo)),
@@ -570,7 +586,9 @@ class _PerfilScreenState extends State<PerfilScreen> {
   }
 
   Future<void> _desativarMetodo() async {
-    final metodo = await _selecionarMetodo('Qual conta deseja desativar?');
+    final metodo = await _selecionarMetodo(
+      'Qual conta deseja desativar?',
+    );
 
     if (metodo == null || !mounted) return;
 
@@ -582,7 +600,8 @@ class _PerfilScreenState extends State<PerfilScreen> {
     final confirmado = await _confirmarAcao(
       titulo: 'Desativar ${_nomeMetodo(metodo)}',
       mensagem:
-          'Deseja realmente desativar o acesso por ${_nomeMetodo(metodo)}? Você poderá reativá-lo posteriormente usando outro método de acesso.',
+          'Deseja realmente desativar seu acesso por ${_nomeMetodo(metodo)}? '
+          'Você poderá reativá-lo posteriormente usando outro método de acesso.',
     );
 
     if (!confirmado || !mounted) return;
@@ -595,17 +614,25 @@ class _PerfilScreenState extends State<PerfilScreen> {
 
       if (!mounted) return;
 
-      _mensagem('Método desativado. Entre novamente pelo outro método.');
+      _mensagem(
+        'Método desativado. Entre novamente pelo outro método.',
+      );
 
       Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => const LoginScreen()),
+        MaterialPageRoute(
+          builder: (context) => const LoginScreen(),
+        ),
         (route) => false,
       );
     } on FirebaseAuthException catch (e) {
       if (e.code == 'last-provider') {
-        _mensagem('Não é possível desativar seu único método de acesso.');
+        _mensagem(
+          'Não é possível desativar seu único método de acesso.',
+        );
       } else {
-        _mensagem(e.message ?? 'Não foi possível desativar o método.');
+        _mensagem(
+          e.message ?? 'Não foi possível desativar o método.',
+        );
       }
     } catch (e) {
       _mensagem('Não foi possível desativar o método.');
@@ -630,14 +657,17 @@ class _PerfilScreenState extends State<PerfilScreen> {
   }
 
   Future<void> _excluirMetodo() async {
-    final metodo = await _selecionarMetodo('Qual conta deseja excluir?');
+    final metodo = await _selecionarMetodo(
+      'Qual conta deseja excluir?',
+    );
 
     if (metodo == null || !mounted) return;
 
     final confirmado = await _confirmarAcao(
       titulo: 'Excluir ${_nomeMetodo(metodo)}',
       mensagem:
-          'Deseja realmente remover o vínculo com ${_nomeMetodo(metodo)}? Essa ação não poderá ser desfeita por este aplicativo.',
+          'Deseja realmente remover o vínculo com ${_nomeMetodo(metodo)}? '
+          'Essa ação não poderá ser desfeita por este aplicativo.',
     );
 
     if (!confirmado || !mounted) return;
@@ -648,16 +678,22 @@ class _PerfilScreenState extends State<PerfilScreen> {
 
       if (!mounted) return;
 
-      _mensagem('Vínculo com ${_nomeMetodo(metodo)} removido.');
+      _mensagem(
+        'Vínculo com ${_nomeMetodo(metodo)} removido.',
+      );
     } on FirebaseAuthException catch (e) {
       if (e.code == 'last-provider') {
-        _mensagem('Não é possível excluir seu único método de acesso.');
+        _mensagem(
+          'Não é possível excluir seu único método de acesso.',
+        );
       } else if (e.code == 'requires-recent-login') {
         _mensagem(
           'Por segurança, entre novamente na conta e tente excluir o método.',
         );
       } else {
-        _mensagem(e.message ?? 'Não foi possível excluir o método.');
+        _mensagem(
+          e.message ?? 'Não foi possível excluir o método.',
+        );
       }
     } catch (e) {
       _mensagem('Não foi possível excluir o método.');
@@ -673,7 +709,9 @@ class _PerfilScreenState extends State<PerfilScreen> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: _escuro ? 0.15 : 0.05),
+            color: Colors.black.withValues(
+              alpha: _escuro ? 0.15 : 0.05,
+            ),
             blurRadius: 10,
             offset: const Offset(0, 3),
           ),
@@ -696,8 +734,10 @@ class _PerfilScreenState extends State<PerfilScreen> {
               child: CircularProgressIndicator(color: _corTexto),
             )
           else ...[
-            if (_metodosVinculados['email'] == true) _itemMetodo('email'),
-            if (_metodosVinculados['google'] == true) _itemMetodo('google'),
+            if (_metodosVinculados['email'] == true)
+              _itemMetodo('email'),
+            if (_metodosVinculados['google'] == true)
+              _itemMetodo('google'),
             if (_metodosVinculados.values.every((vinculado) => !vinculado))
               Text(
                 'Nenhum método de acesso encontrado.',
@@ -705,6 +745,8 @@ class _PerfilScreenState extends State<PerfilScreen> {
               ),
           ],
           const SizedBox(height: 18),
+
+          // Botão Desativar conta: amarelo.
           SizedBox(
             width: double.infinity,
             height: 52,
@@ -713,15 +755,18 @@ class _PerfilScreenState extends State<PerfilScreen> {
               icon: const Icon(Icons.block),
               label: const Text('Desativar conta'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red.shade700,
-                foregroundColor: Colors.white,
+                backgroundColor: Colors.amber.shade600,
+                foregroundColor: Colors.black,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),
                 ),
               ),
             ),
           ),
+
           const SizedBox(height: 12),
+
+          // Botão Excluir conta: permanece vermelho escuro.
           SizedBox(
             width: double.infinity,
             height: 52,
@@ -751,7 +796,9 @@ class _PerfilScreenState extends State<PerfilScreen> {
       child: Row(
         children: [
           Icon(
-            metodo == 'email' ? Icons.email_outlined : Icons.g_mobiledata,
+            metodo == 'email'
+                ? Icons.email_outlined
+                : Icons.g_mobiledata,
             color: _corTexto,
             size: 28,
           ),
@@ -806,10 +853,14 @@ class _PerfilScreenState extends State<PerfilScreen> {
             decoration: BoxDecoration(
               color: _corDetalhe,
               shape: BoxShape.circle,
-              border: Border.all(color: verdeClaro, width: 3),
+              border: Border.all(
+                color: verdeClaro,
+                width: 3,
+              ),
             ),
             child: ClipOval(
-              child: _caminhoFoto != null && File(_caminhoFoto!).existsSync()
+              child: _caminhoFoto != null &&
+                      File(_caminhoFoto!).existsSync()
                   ? Image.file(
                       File(_caminhoFoto!),
                       width: 110,
@@ -883,7 +934,9 @@ class _PerfilScreenState extends State<PerfilScreen> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: _escuro ? 0.15 : 0.05),
+            color: Colors.black.withValues(
+              alpha: _escuro ? 0.15 : 0.05,
+            ),
             blurRadius: 10,
             offset: const Offset(0, 3),
           ),
@@ -898,7 +951,11 @@ class _PerfilScreenState extends State<PerfilScreen> {
               color: _corDetalhe,
               borderRadius: BorderRadius.circular(14),
             ),
-            child: Icon(icone, color: _corTexto, size: 25),
+            child: Icon(
+              icone,
+              color: _corTexto,
+              size: 25,
+            ),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -928,7 +985,10 @@ class _PerfilScreenState extends State<PerfilScreen> {
             IconButton(
               onPressed: onEditar,
               tooltip: 'Editar nome',
-              icon: Icon(Icons.edit_outlined, color: _corTexto),
+              icon: Icon(
+                Icons.edit_outlined,
+                color: _corTexto,
+              ),
             ),
         ],
       ),
@@ -953,6 +1013,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
   Widget build(BuildContext context) {
     final usuario = _usuario;
     final nome = usuario?.displayName?.trim();
+
     final nomeExibicao =
         nome != null && nome.isNotEmpty ? nome : 'Usuário';
 
@@ -1132,6 +1193,8 @@ class _PerfilScreenState extends State<PerfilScreen> {
               const SizedBox(height: 14),
               _secaoGerenciarMetodos(),
               const SizedBox(height: 32),
+
+              // Botão Sair da conta: vermelho claro.
               SizedBox(
                 width: double.infinity,
                 height: 56,
@@ -1146,7 +1209,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
                     ),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red.shade700,
+                    backgroundColor: Colors.red.shade400,
                     foregroundColor: Colors.white,
                     elevation: 2,
                     shape: RoundedRectangleBorder(

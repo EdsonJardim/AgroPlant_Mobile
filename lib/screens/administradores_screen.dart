@@ -1,26 +1,20 @@
 import 'package:flutter/material.dart';
+
 import '../services/admin_service.dart';
+import '../widgets/agroplant_app_bar.dart';
 
 class AdministradoresScreen extends StatefulWidget {
   const AdministradoresScreen({super.key});
 
   @override
-  State<AdministradoresScreen> createState() =>
-      _AdministradoresScreenState();
+  State<AdministradoresScreen> createState() => _AdministradoresScreenState();
 }
 
-class _AdministradoresScreenState
-    extends State<AdministradoresScreen> {
+class _AdministradoresScreenState extends State<AdministradoresScreen> {
   final AdminService _adminService = AdminService();
-  final TextEditingController _buscaController =
-      TextEditingController();
+  final TextEditingController _buscaController = TextEditingController();
 
-  static const Color verde = Color(0xFF174D2A);
-  static const Color bege = Color(0xFFE8DCC6);
-
-  // UID do administrador principal.
-  static const String _uidPrincipal =
-      'caaZpZoJqZfTwYcsJ1k9AGpxRi53';
+  static const String _uidPrincipal = 'caaZpZoJqZfTwYcsJ1k9AGpxRi53';
 
   List<Map<String, dynamic>> _administradores = [];
   List<Map<String, dynamic>> _usuariosDisponiveis = [];
@@ -41,7 +35,30 @@ class _AdministradoresScreenState
     super.dispose();
   }
 
+  int get _totalAtivos => _administradores.where((admin) {
+    return admin['ativo'] == true;
+  }).length;
+
+  int get _totalInativos => _administradores.where((admin) {
+    return admin['ativo'] != true;
+  }).length;
+
+  List<Map<String, dynamic>> get _usuariosFiltrados {
+    final busca = _buscaController.text.trim().toLowerCase();
+
+    if (busca.isEmpty) return _usuariosDisponiveis;
+
+    return _usuariosDisponiveis.where((usuario) {
+      final nome = (usuario['nome'] ?? '').toString().toLowerCase();
+      final email = (usuario['email'] ?? '').toString().toLowerCase();
+
+      return nome.contains(busca) || email.contains(busca);
+    }).toList();
+  }
+
   Future<void> _carregarDados() async {
+    if (!mounted) return;
+
     setState(() {
       _carregando = true;
       _erro = null;
@@ -70,48 +87,59 @@ class _AdministradoresScreenState
     }
   }
 
-  List<Map<String, dynamic>> get _usuariosFiltrados {
-    final busca =
-        _buscaController.text.trim().toLowerCase();
+  void _mostrarMensagem(String mensagem, {bool erro = false}) {
+    final cores = Theme.of(context).colorScheme;
 
-    if (busca.isEmpty) return _usuariosDisponiveis;
-
-    return _usuariosDisponiveis.where((usuario) {
-      final nome = usuario['nome'].toString().toLowerCase();
-      final email =
-          usuario['email'].toString().toLowerCase();
-
-      return nome.contains(busca) ||
-          email.contains(busca);
-    }).toList();
-  }
-
-  Future<void> _promoverUsuario(
-    Map<String, dynamic> usuario,
-  ) async {
-    final confirmar = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Promover administrador'),
-        content: Text(
-          'Deseja promover ${usuario['nome']} a administrador da equipe?',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () =>
-                Navigator.pop(context, false),
-            child: const Text('Cancelar'),
-          ),
-          ElevatedButton(
-            onPressed: () =>
-                Navigator.pop(context, true),
-            child: const Text('Confirmar'),
-          ),
-        ],
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(mensagem),
+        backgroundColor: erro ? cores.error : cores.primary,
+        behavior: SnackBarBehavior.floating,
       ),
     );
+  }
 
-    if (confirmar != true) return;
+  Future<void> _promoverUsuario(Map<String, dynamic> usuario) async {
+    if (_processando) return;
+
+    final confirmar = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        final cores = Theme.of(context).colorScheme;
+
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Text(
+            'Promover administrador',
+            style: TextStyle(
+              color: cores.primary,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          content: Text(
+            'Deseja promover ${usuario['nome']} a administrador da equipe?',
+            style: TextStyle(color: cores.onSurface),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: Text(
+                'Cancelar',
+                style: TextStyle(color: cores.onSurfaceVariant),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Confirmar'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmar != true || !mounted) return;
 
     setState(() => _processando = true);
 
@@ -124,28 +152,14 @@ class _AdministradoresScreenState
 
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Administrador cadastrado com sucesso!',
-          ),
-          backgroundColor: verde,
-        ),
-      );
+      _mostrarMensagem('Administrador cadastrado com sucesso!');
 
       _buscaController.clear();
       await _carregarDados();
     } catch (e) {
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Erro ao cadastrar administrador: $e',
-          ),
-          backgroundColor: Colors.red,
-        ),
-      );
+      _mostrarMensagem('Erro ao cadastrar administrador: $e', erro: true);
     } finally {
       if (mounted) {
         setState(() => _processando = false);
@@ -157,6 +171,16 @@ class _AdministradoresScreenState
     Map<String, dynamic> administrador,
     bool ativo,
   ) async {
+    if (_processando) return;
+
+    if (administrador['uid'] == _uidPrincipal) {
+      _mostrarMensagem(
+        'O administrador principal não pode ser alterado.',
+        erro: true,
+      );
+      return;
+    }
+
     setState(() => _processando = true);
 
     try {
@@ -167,29 +191,15 @@ class _AdministradoresScreenState
 
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            ativo
-                ? 'Administrador ativado!'
-                : 'Administrador desativado!',
-          ),
-          backgroundColor: verde,
-        ),
+      _mostrarMensagem(
+        ativo ? 'Administrador ativado!' : 'Administrador desativado!',
       );
 
       await _carregarDados();
     } catch (e) {
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Erro ao alterar administrador: $e',
-          ),
-          backgroundColor: Colors.red,
-        ),
-      );
+      _mostrarMensagem('Erro ao alterar administrador: $e', erro: true);
     } finally {
       if (mounted) {
         setState(() => _processando = false);
@@ -200,65 +210,74 @@ class _AdministradoresScreenState
   Future<void> _removerAdministrador(
     Map<String, dynamic> administrador,
   ) async {
+    if (_processando) return;
+
+    if (administrador['uid'] == _uidPrincipal) {
+      _mostrarMensagem(
+        'O administrador principal não pode ser removido.',
+        erro: true,
+      );
+      return;
+    }
+
     final confirmar = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Remover administrador'),
-        content: Text(
-          'Deseja remover ${administrador['nome']} da equipe administrativa? '
-          'A conta de usuário continuará existindo.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () =>
-                Navigator.pop(context, false),
-            child: const Text('Cancelar'),
+      builder: (context) {
+        final cores = Theme.of(context).colorScheme;
+
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
           ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
+          title: Text(
+            'Remover administrador',
+            style: TextStyle(
+              color: cores.primary,
+              fontWeight: FontWeight.bold,
             ),
-            onPressed: () =>
-                Navigator.pop(context, true),
-            child: const Text('Remover'),
           ),
-        ],
-      ),
+          content: Text(
+            'Deseja remover ${administrador['nome']} da equipe administrativa? '
+            'A conta de usuário continuará existindo.',
+            style: TextStyle(color: cores.onSurface),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: Text(
+                'Cancelar',
+                style: TextStyle(color: cores.onSurfaceVariant),
+              ),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: cores.error,
+                foregroundColor: cores.onError,
+              ),
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Remover'),
+            ),
+          ],
+        );
+      },
     );
 
-    if (confirmar != true) return;
+    if (confirmar != true || !mounted) return;
 
     setState(() => _processando = true);
 
     try {
-      await _adminService.removerAdministrador(
-        administrador['uid'],
-      );
+      await _adminService.removerAdministrador(administrador['uid']);
 
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Administrador removido com sucesso!',
-          ),
-          backgroundColor: verde,
-        ),
-      );
+      _mostrarMensagem('Administrador removido com sucesso!');
 
       await _carregarDados();
     } catch (e) {
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Erro ao remover administrador: $e',
-          ),
-          backgroundColor: Colors.red,
-        ),
-      );
+      _mostrarMensagem('Erro ao remover administrador: $e', erro: true);
     } finally {
       if (mounted) {
         setState(() => _processando = false);
@@ -268,153 +287,233 @@ class _AdministradoresScreenState
 
   @override
   Widget build(BuildContext context) {
+    final tema = Theme.of(context);
+    final cores = tema.colorScheme;
+
     return Scaffold(
-      backgroundColor: bege,
-      appBar: AppBar(
-        title: const Text('Administradores'),
-        backgroundColor: const Color(0xFFF7F2E8),
-        foregroundColor: verde,
+      backgroundColor: tema.scaffoldBackgroundColor,
+      appBar: AgroPlantAppBar(
+        backgroundColor:
+            tema.appBarTheme.backgroundColor ?? cores.surface,
+        foregroundColor:
+            tema.appBarTheme.foregroundColor ?? cores.onSurface,
+        centerTitle: true,
+        title: Text(
+          'Administradores',
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            color: tema.appBarTheme.foregroundColor ?? cores.onSurface,
+          ),
+        ),
         actions: [
           IconButton(
-            onPressed: _carregarDados,
+            onPressed: _carregando || _processando ? null : _carregarDados,
             icon: const Icon(Icons.refresh),
+            tooltip: 'Atualizar lista',
           ),
         ],
       ),
-      body: SafeArea(
-        child: _construirConteudo(),
-      ),
+      body: SafeArea(child: _construirConteudo()),
     );
   }
 
   Widget _construirConteudo() {
+    final tema = Theme.of(context);
+    final cores = tema.colorScheme;
+
     if (_carregando) {
-      return const Center(
-        child: CircularProgressIndicator(
-          color: verde,
-        ),
+      return Center(
+        child: CircularProgressIndicator(color: cores.primary),
       );
     }
 
     if (_erro != null) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(
-                Icons.error_outline,
-                color: Colors.red,
-                size: 48,
-              ),
-              const SizedBox(height: 12),
-              const Text(
-                'Não foi possível carregar os administradores.',
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 12),
-              Text(
-                _erro!,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: _carregarDados,
-                child: const Text('Tentar novamente'),
-              ),
-            ],
-          ),
-        ),
-      );
+      return _construirErro();
     }
 
     return Stack(
       children: [
         RefreshIndicator(
           onRefresh: _carregarDados,
-          color: verde,
+          color: cores.primary,
           child: ListView(
-            padding: const EdgeInsets.all(16),
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(20, 24, 20, 30),
             children: [
-              const Text(
-                'Equipe administrativa',
-                style: TextStyle(
-                  fontSize: 21,
-                  fontWeight: FontWeight.bold,
-                  color: verde,
+              Center(
+                child: Container(
+                  width: 86,
+                  height: 86,
+                  decoration: BoxDecoration(
+                    color: cores.surface,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.admin_panel_settings_outlined,
+                    color: cores.primary,
+                    size: 44,
+                  ),
                 ),
               ),
-              const SizedBox(height: 8),
-              const Text(
-                'Consulte e controle os administradores da equipe.',
-                style: TextStyle(
-                  color: Color(0xFF62594B),
-                ),
-              ),
-              const SizedBox(height: 18),
 
-              ..._administradores.map(
-                _cartaoAdministrador,
+              const SizedBox(height: 20),
+
+              Text(
+                'Equipe administrativa',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold,
+                  color: cores.primary,
+                ),
+              ),
+
+              const SizedBox(height: 10),
+
+              Text(
+                'Cadastre e gerencie os administradores responsáveis pelo AgroPlant.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 14,
+                  height: 1.5,
+                  color: cores.onSurfaceVariant,
+                ),
               ),
 
               const SizedBox(height: 28),
 
-              const Text(
-                'Adicionar administrador',
-                style: TextStyle(
-                  fontSize: 21,
-                  fontWeight: FontWeight.bold,
-                  color: verde,
-                ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'Selecione um usuário cadastrado para promover a administrador da equipe.',
-                style: TextStyle(
-                  color: Color(0xFF62594B),
-                ),
-              ),
-              const SizedBox(height: 14),
-
-              TextField(
-                controller: _buscaController,
-                onChanged: (_) => setState(() {}),
-                decoration: InputDecoration(
-                  hintText:
-                      'Buscar usuário por nome ou e-mail',
-                  prefixIcon: const Icon(
-                    Icons.search,
-                    color: verde,
+              Row(
+                children: [
+                  Expanded(
+                    child: _cartaoResumo(
+                      titulo: 'Administradores',
+                      quantidade: _administradores.length,
+                      icone: Icons.people_outline,
+                      cor: cores.primary,
+                    ),
                   ),
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    borderSide: BorderSide.none,
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _cartaoResumo(
+                      titulo: 'Ativos',
+                      quantidade: _totalAtivos,
+                      icone: Icons.check_circle_outline,
+                      cor: Colors.green.shade700,
+                    ),
                   ),
-                  suffixIcon: IconButton(
-                    onPressed: () {
-                      _buscaController.clear();
-                      setState(() {});
-                    },
-                    icon: const Icon(Icons.clear),
-                  ),
-                ),
+                ],
               ),
 
               const SizedBox(height: 12),
 
-              ..._usuariosFiltrados.map(_cartaoUsuario),
+              _cartaoResumo(
+                titulo: 'Administradores inativos',
+                quantidade: _totalInativos,
+                icone: Icons.block_outlined,
+                cor: cores.error,
+              ),
+
+              const SizedBox(height: 30),
+
+              Text(
+                'Administradores cadastrados',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: cores.primary,
+                ),
+              ),
+
+              const SizedBox(height: 14),
+
+              if (_administradores.isEmpty)
+                _mensagemVazia(
+                  'Nenhum administrador cadastrado.',
+                  Icons.admin_panel_settings_outlined,
+                )
+              else
+                ..._administradores.map(_cartaoAdministrador),
+
+              const SizedBox(height: 28),
+
+              Text(
+                'Adicionar administrador',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: cores.primary,
+                ),
+              ),
+
+              const SizedBox(height: 8),
+
+              Text(
+                'Pesquise um usuário cadastrado para promovê-lo a administrador da equipe.',
+                style: TextStyle(
+                  color: cores.onSurfaceVariant,
+                  fontSize: 13,
+                  height: 1.5,
+                ),
+              ),
+
+              const SizedBox(height: 16),
+
+              TextField(
+                controller: _buscaController,
+                onChanged: (_) => setState(() {}),
+                style: TextStyle(color: cores.onSurface),
+                decoration: InputDecoration(
+                  hintText: 'Buscar usuário por nome ou e-mail',
+                  hintStyle: TextStyle(
+                    color: cores.onSurfaceVariant,
+                    fontSize: 13,
+                  ),
+                  prefixIcon: Icon(Icons.search, color: cores.primary),
+                  filled: true,
+                  fillColor: tema.inputDecorationTheme.fillColor ??
+                      cores.surface,
+                  contentPadding: const EdgeInsets.symmetric(vertical: 17),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(18),
+                    borderSide: BorderSide.none,
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(18),
+                    borderSide: BorderSide.none,
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(18),
+                    borderSide: BorderSide(
+                      color: cores.secondary,
+                      width: 1.5,
+                    ),
+                  ),
+                  suffixIcon: _buscaController.text.isNotEmpty
+                      ? IconButton(
+                          onPressed: () {
+                            _buscaController.clear();
+                            setState(() {});
+                          },
+                          icon: Icon(
+                            Icons.close,
+                            color: cores.onSurfaceVariant,
+                          ),
+                        )
+                      : null,
+                ),
+              ),
+
+              const SizedBox(height: 16),
 
               if (_usuariosFiltrados.isEmpty)
-                const Padding(
-                  padding: EdgeInsets.all(20),
-                  child: Text(
-                    'Nenhum usuário disponível para promover.',
-                    textAlign: TextAlign.center,
-                  ),
-                ),
+                _mensagemVazia(
+                  _usuariosDisponiveis.isEmpty
+                      ? 'Não existem usuários disponíveis para promover.'
+                      : 'Nenhum usuário encontrado para essa pesquisa.',
+                  Icons.person_search_outlined,
+                )
+              else
+                ..._usuariosFiltrados.map(_cartaoUsuario),
             ],
           ),
         ),
@@ -422,11 +521,9 @@ class _AdministradoresScreenState
         if (_processando)
           Positioned.fill(
             child: Container(
-              color: Colors.black26,
-              child: const Center(
-                child: CircularProgressIndicator(
-                  color: verde,
-                ),
+              color: Colors.black.withValues(alpha: 0.12),
+              child: Center(
+                child: CircularProgressIndicator(color: cores.primary),
               ),
             ),
           ),
@@ -434,73 +531,205 @@ class _AdministradoresScreenState
     );
   }
 
-  // Cartão dos administradores.
-  // O administrador principal não pode ser removido
-  // ou desativado pela interface.
-  Widget _cartaoAdministrador(
-    Map<String, dynamic> administrador,
-  ) {
-    final ativo = administrador['ativo'] == true;
+  Widget _construirErro() {
+    final cores = Theme.of(context).colorScheme;
 
-    final principal =
-        administrador['uid'] == _uidPrincipal;
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.error_outline, color: cores.error, size: 48),
+            const SizedBox(height: 14),
+            Text(
+              'Não foi possível carregar os administradores.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: cores.onSurface,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              _erro!,
+              textAlign: TextAlign.center,
+              style: TextStyle(color: cores.onSurfaceVariant),
+            ),
+            const SizedBox(height: 18),
+            ElevatedButton(
+              onPressed: _carregarDados,
+              child: const Text('Tentar novamente'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
-    return Card(
-      color: Colors.white,
-      margin: const EdgeInsets.only(bottom: 12),
-      shape: RoundedRectangleBorder(
+  Widget _cartaoResumo({
+    required String titulo,
+    required int quantidade,
+    required IconData icone,
+    required Color cor,
+  }) {
+    final cores = Theme.of(context).colorScheme;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: cores.surface,
         borderRadius: BorderRadius.circular(18),
       ),
+      child: Row(
+        children: [
+          Icon(icone, color: cor, size: 27),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '$quantidade',
+                  style: TextStyle(
+                    color: cor,
+                    fontSize: 21,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  titulo,
+                  style: TextStyle(
+                    color: cores.onSurfaceVariant,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _mensagemVazia(String mensagem, IconData icone) {
+    final cores = Theme.of(context).colorScheme;
+
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: cores.surface,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Column(
+        children: [
+          Icon(icone, color: cores.secondary, size: 44),
+          const SizedBox(height: 12),
+          Text(
+            mensagem,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: cores.onSurface,
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _cartaoAdministrador(Map<String, dynamic> administrador) {
+    final tema = Theme.of(context);
+    final cores = tema.colorScheme;
+
+    final ativo = administrador['ativo'] == true;
+    final principal = administrador['uid'] == _uidPrincipal;
+
+    final corStatus = principal
+        ? cores.primary
+        : ativo
+            ? Colors.green.shade700
+            : cores.error;
+
+    return Card(
+      color: tema.cardTheme.color ?? cores.surface,
+      elevation: 1,
+      shadowColor: Colors.black12,
+      margin: const EdgeInsets.only(bottom: 13),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.all(15),
         child: Column(
           children: [
             Row(
               children: [
-                CircleAvatar(
-                  backgroundColor:
-                      const Color(0xFFE8DCC6),
+                Container(
+                  width: 54,
+                  height: 54,
+                  decoration: BoxDecoration(
+                    color: cores.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(17),
+                  ),
                   child: Icon(
                     principal
-                        ? Icons.verified_user
-                        : Icons.admin_panel_settings,
-                    color: verde,
+                        ? Icons.verified_user_outlined
+                        : Icons.admin_panel_settings_outlined,
+                    color: cores.primary,
+                    size: 29,
                   ),
                 ),
-                const SizedBox(width: 12),
+
+                const SizedBox(width: 13),
 
                 Expanded(
                   child: Column(
-                    crossAxisAlignment:
-                        CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        administrador['nome'],
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: verde,
-                        ),
-                      ),
-                      Text(
-                        administrador['email'],
-                        style: const TextStyle(
-                          fontSize: 12,
-                        ),
-                      ),
-                      Text(
-                        principal
-                            ? 'Administrador principal'
-                            : ativo
-                                ? 'Administrador ativo'
-                                : 'Administrador inativo',
+                        administrador['nome'] ?? 'Nome não informado',
                         style: TextStyle(
-                          color: principal
-                              ? verde
-                              : ativo
-                                  ? Colors.green
-                                  : Colors.red,
                           fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                          color: cores.onSurface,
+                        ),
+                      ),
+
+                      const SizedBox(height: 5),
+
+                      Text(
+                        administrador['email'] ?? 'E-mail não informado',
+                        style: TextStyle(
+                          color: cores.onSurfaceVariant,
                           fontSize: 12,
+                        ),
+                      ),
+
+                      const SizedBox(height: 9),
+
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 5,
+                        ),
+                        decoration: BoxDecoration(
+                          color: corStatus.withValues(alpha: 0.10),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          principal
+                              ? 'Administrador principal'
+                              : ativo
+                                  ? 'Administrador ativo'
+                                  : 'Administrador inativo',
+                          style: TextStyle(
+                            color: corStatus,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 10,
+                          ),
                         ),
                       ),
                     ],
@@ -508,86 +737,108 @@ class _AdministradoresScreenState
                 ),
 
                 if (principal)
-                  const Icon(
-                    Icons.lock,
-                    color: verde,
-                    size: 24,
+                  Icon(
+                    Icons.lock_outline,
+                    color: cores.primary,
+                    size: 23,
                   )
                 else
                   Switch(
                     value: ativo,
-                    activeThumbColor: verde,
                     onChanged: _processando
                         ? null
-                        : (valor) => _alterarStatus(
-                              administrador,
-                              valor,
-                            ),
+                        : (valor) => _alterarStatus(administrador, valor),
                   ),
               ],
             ),
 
-            if (!principal)
+            if (!principal) ...[
+              Divider(
+                height: 24,
+                color: cores.outlineVariant,
+              ),
+
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton.icon(
                   onPressed: _processando
                       ? null
-                      : () => _removerAdministrador(
-                            administrador,
-                          ),
-                  icon: const Icon(
+                      : () => _removerAdministrador(administrador),
+                  icon: Icon(
                     Icons.delete_outline,
-                    color: Colors.red,
+                    color: cores.error,
+                    size: 20,
                   ),
-                  label: const Text(
+                  label: Text(
                     'Remover administrador',
                     style: TextStyle(
-                      color: Colors.red,
+                      color: cores.error,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
               ),
+            ],
           ],
         ),
       ),
     );
   }
 
-  // Cartão dos usuários que podem ser promovidos.
-  Widget _cartaoUsuario(
-    Map<String, dynamic> usuario,
-  ) {
+  Widget _cartaoUsuario(Map<String, dynamic> usuario) {
+    final tema = Theme.of(context);
+    final cores = tema.colorScheme;
+
     return Card(
-      color: Colors.white,
-      margin: const EdgeInsets.only(bottom: 10),
+      color: tema.cardTheme.color ?? cores.surface,
+      elevation: 1,
+      shadowColor: Colors.black12,
+      margin: const EdgeInsets.only(bottom: 12),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(18),
       ),
       child: ListTile(
-        leading: const CircleAvatar(
-          backgroundColor: Color(0xFFE8DCC6),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 15,
+          vertical: 8,
+        ),
+        leading: Container(
+          width: 48,
+          height: 48,
+          decoration: BoxDecoration(
+            color: cores.surfaceContainerHighest,
+            borderRadius: BorderRadius.circular(15),
+          ),
           child: Icon(
             Icons.person_add_alt_1,
-            color: verde,
+            color: cores.primary,
+            size: 25,
           ),
         ),
         title: Text(
-          usuario['nome'],
-          style: const TextStyle(
+          usuario['nome'] ?? 'Nome não informado',
+          style: TextStyle(
             fontWeight: FontWeight.bold,
-            color: verde,
+            color: cores.onSurface,
+            fontSize: 14,
           ),
         ),
-        subtitle: Text(usuario['email']),
+        subtitle: Text(
+          usuario['email'] ?? 'E-mail não informado',
+          style: TextStyle(
+            color: cores.onSurfaceVariant,
+            fontSize: 12,
+          ),
+        ),
         trailing: IconButton(
           tooltip: 'Promover a administrador',
           onPressed: _processando
               ? null
               : () => _promoverUsuario(usuario),
-          icon: const Icon(
+          icon: Icon(
             Icons.add_circle_outline,
-            color: verde,
+            color: cores.primary,
+            size: 28,
           ),
         ),
       ),
