@@ -7,7 +7,8 @@ class AdministradoresScreen extends StatefulWidget {
   const AdministradoresScreen({super.key});
 
   @override
-  State<AdministradoresScreen> createState() => _AdministradoresScreenState();
+  State<AdministradoresScreen> createState() =>
+      _AdministradoresScreenState();
 }
 
 class _AdministradoresScreenState extends State<AdministradoresScreen> {
@@ -16,12 +17,27 @@ class _AdministradoresScreenState extends State<AdministradoresScreen> {
 
   static const String _uidPrincipal = 'caaZpZoJqZfTwYcsJ1k9AGpxRi53';
 
+  static const Color _verdeAgroPlant = Color(0xFF174D2A);
+  static const Color _verdeSecundario = Color(0xFF55745D);
+
   List<Map<String, dynamic>> _administradores = [];
   List<Map<String, dynamic>> _usuariosDisponiveis = [];
 
   bool _carregando = true;
   bool _processando = false;
   String? _erro;
+
+  Color _corTextoPrincipal(ThemeData tema) {
+    return tema.brightness == Brightness.dark
+        ? tema.colorScheme.primary
+        : _verdeAgroPlant;
+  }
+
+  Color _corTextoSecundario(ThemeData tema) {
+    return tema.brightness == Brightness.dark
+        ? tema.colorScheme.onSurfaceVariant
+        : _verdeSecundario;
+  }
 
   @override
   void initState() {
@@ -36,12 +52,12 @@ class _AdministradoresScreenState extends State<AdministradoresScreen> {
   }
 
   int get _totalAtivos => _administradores.where((admin) {
-    return admin['ativo'] == true;
-  }).length;
+        return admin['ativo'] == true;
+      }).length;
 
   int get _totalInativos => _administradores.where((admin) {
-    return admin['ativo'] != true;
-  }).length;
+        return admin['ativo'] != true;
+      }).length;
 
   List<Map<String, dynamic>> get _usuariosFiltrados {
     final busca = _buscaController.text.trim().toLowerCase();
@@ -105,29 +121,35 @@ class _AdministradoresScreenState extends State<AdministradoresScreen> {
     final confirmar = await showDialog<bool>(
       context: context,
       builder: (context) {
-        final cores = Theme.of(context).colorScheme;
+        final tema = Theme.of(context);
+        final cores = tema.colorScheme;
 
         return AlertDialog(
+          backgroundColor: cores.surface,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
           title: Text(
             'Promover administrador',
             style: TextStyle(
-              color: cores.primary,
+              color: _corTextoPrincipal(tema),
               fontWeight: FontWeight.bold,
             ),
           ),
           content: Text(
             'Deseja promover ${usuario['nome']} a administrador da equipe?',
-            style: TextStyle(color: cores.onSurface),
+            style: TextStyle(
+              color: _corTextoSecundario(tema),
+            ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
               child: Text(
                 'Cancelar',
-                style: TextStyle(color: cores.onSurfaceVariant),
+                style: TextStyle(
+                  color: _corTextoSecundario(tema),
+                ),
               ),
             ),
             ElevatedButton(
@@ -159,7 +181,10 @@ class _AdministradoresScreenState extends State<AdministradoresScreen> {
     } catch (e) {
       if (!mounted) return;
 
-      _mostrarMensagem('Erro ao cadastrar administrador: $e', erro: true);
+      _mostrarMensagem(
+        'Erro ao cadastrar administrador: $e',
+        erro: true,
+      );
     } finally {
       if (mounted) {
         setState(() => _processando = false);
@@ -199,7 +224,10 @@ class _AdministradoresScreenState extends State<AdministradoresScreen> {
     } catch (e) {
       if (!mounted) return;
 
-      _mostrarMensagem('Erro ao alterar administrador: $e', erro: true);
+      _mostrarMensagem(
+        'Erro ao alterar administrador: $e',
+        erro: true,
+      );
     } finally {
       if (mounted) {
         setState(() => _processando = false);
@@ -223,30 +251,36 @@ class _AdministradoresScreenState extends State<AdministradoresScreen> {
     final confirmar = await showDialog<bool>(
       context: context,
       builder: (context) {
-        final cores = Theme.of(context).colorScheme;
+        final tema = Theme.of(context);
+        final cores = tema.colorScheme;
 
         return AlertDialog(
+          backgroundColor: cores.surface,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
           title: Text(
             'Remover administrador',
             style: TextStyle(
-              color: cores.primary,
+              color: _corTextoPrincipal(tema),
               fontWeight: FontWeight.bold,
             ),
           ),
           content: Text(
             'Deseja remover ${administrador['nome']} da equipe administrativa? '
             'A conta de usuário continuará existindo.',
-            style: TextStyle(color: cores.onSurface),
+            style: TextStyle(
+              color: _corTextoSecundario(tema),
+            ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
               child: Text(
                 'Cancelar',
-                style: TextStyle(color: cores.onSurfaceVariant),
+                style: TextStyle(
+                  color: _corTextoSecundario(tema),
+                ),
               ),
             ),
             ElevatedButton(
@@ -277,7 +311,10 @@ class _AdministradoresScreenState extends State<AdministradoresScreen> {
     } catch (e) {
       if (!mounted) return;
 
-      _mostrarMensagem('Erro ao remover administrador: $e', erro: true);
+      _mostrarMensagem(
+        'Erro ao remover administrador: $e',
+        erro: true,
+      );
     } finally {
       if (mounted) {
         setState(() => _processando = false);
@@ -289,20 +326,20 @@ class _AdministradoresScreenState extends State<AdministradoresScreen> {
   Widget build(BuildContext context) {
     final tema = Theme.of(context);
     final cores = tema.colorScheme;
+    final corTexto = _corTextoPrincipal(tema);
 
     return Scaffold(
       backgroundColor: tema.scaffoldBackgroundColor,
       appBar: AgroPlantAppBar(
         backgroundColor:
             tema.appBarTheme.backgroundColor ?? cores.surface,
-        foregroundColor:
-            tema.appBarTheme.foregroundColor ?? cores.onSurface,
+        foregroundColor: corTexto,
         centerTitle: true,
         title: Text(
           'Administradores',
           style: TextStyle(
             fontWeight: FontWeight.w600,
-            color: tema.appBarTheme.foregroundColor ?? cores.onSurface,
+            color: corTexto,
           ),
         ),
         actions: [
@@ -313,13 +350,17 @@ class _AdministradoresScreenState extends State<AdministradoresScreen> {
           ),
         ],
       ),
-      body: SafeArea(child: _construirConteudo()),
+      body: SafeArea(
+        child: _construirConteudo(),
+      ),
     );
   }
 
   Widget _construirConteudo() {
     final tema = Theme.of(context);
     final cores = tema.colorScheme;
+    final corTexto = _corTextoPrincipal(tema);
+    final corSecundaria = _corTextoSecundario(tema);
 
     if (_carregando) {
       return Center(
@@ -364,7 +405,7 @@ class _AdministradoresScreenState extends State<AdministradoresScreen> {
                 style: TextStyle(
                   fontSize: 25,
                   fontWeight: FontWeight.bold,
-                  color: cores.primary,
+                  color: corTexto,
                 ),
               ),
 
@@ -376,7 +417,7 @@ class _AdministradoresScreenState extends State<AdministradoresScreen> {
                 style: TextStyle(
                   fontSize: 14,
                   height: 1.5,
-                  color: cores.onSurfaceVariant,
+                  color: corSecundaria,
                 ),
               ),
 
@@ -420,7 +461,7 @@ class _AdministradoresScreenState extends State<AdministradoresScreen> {
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: cores.primary,
+                  color: corTexto,
                 ),
               ),
 
@@ -441,7 +482,7 @@ class _AdministradoresScreenState extends State<AdministradoresScreen> {
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: cores.primary,
+                  color: corTexto,
                 ),
               ),
 
@@ -450,7 +491,7 @@ class _AdministradoresScreenState extends State<AdministradoresScreen> {
               Text(
                 'Pesquise um usuário cadastrado para promovê-lo a administrador da equipe.',
                 style: TextStyle(
-                  color: cores.onSurfaceVariant,
+                  color: corSecundaria,
                   fontSize: 13,
                   height: 1.5,
                 ),
@@ -461,18 +502,25 @@ class _AdministradoresScreenState extends State<AdministradoresScreen> {
               TextField(
                 controller: _buscaController,
                 onChanged: (_) => setState(() {}),
-                style: TextStyle(color: cores.onSurface),
+                style: TextStyle(
+                  color: corTexto,
+                ),
                 decoration: InputDecoration(
                   hintText: 'Buscar usuário por nome ou e-mail',
                   hintStyle: TextStyle(
-                    color: cores.onSurfaceVariant,
+                    color: corSecundaria.withValues(alpha: 0.85),
                     fontSize: 13,
                   ),
-                  prefixIcon: Icon(Icons.search, color: cores.primary),
+                  prefixIcon: Icon(
+                    Icons.search,
+                    color: cores.primary,
+                  ),
                   filled: true,
                   fillColor: tema.inputDecorationTheme.fillColor ??
                       cores.surface,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 17),
+                  contentPadding: const EdgeInsets.symmetric(
+                    vertical: 17,
+                  ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(18),
                     borderSide: BorderSide.none,
@@ -496,7 +544,7 @@ class _AdministradoresScreenState extends State<AdministradoresScreen> {
                           },
                           icon: Icon(
                             Icons.close,
-                            color: cores.onSurfaceVariant,
+                            color: corSecundaria,
                           ),
                         )
                       : null,
@@ -523,7 +571,9 @@ class _AdministradoresScreenState extends State<AdministradoresScreen> {
             child: Container(
               color: Colors.black.withValues(alpha: 0.12),
               child: Center(
-                child: CircularProgressIndicator(color: cores.primary),
+                child: CircularProgressIndicator(
+                  color: cores.primary,
+                ),
               ),
             ),
           ),
@@ -532,7 +582,8 @@ class _AdministradoresScreenState extends State<AdministradoresScreen> {
   }
 
   Widget _construirErro() {
-    final cores = Theme.of(context).colorScheme;
+    final tema = Theme.of(context);
+    final cores = tema.colorScheme;
 
     return Center(
       child: Padding(
@@ -540,13 +591,17 @@ class _AdministradoresScreenState extends State<AdministradoresScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.error_outline, color: cores.error, size: 48),
+            Icon(
+              Icons.error_outline,
+              color: cores.error,
+              size: 48,
+            ),
             const SizedBox(height: 14),
             Text(
               'Não foi possível carregar os administradores.',
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: cores.onSurface,
+                color: _corTextoPrincipal(tema),
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -554,7 +609,9 @@ class _AdministradoresScreenState extends State<AdministradoresScreen> {
             Text(
               _erro!,
               textAlign: TextAlign.center,
-              style: TextStyle(color: cores.onSurfaceVariant),
+              style: TextStyle(
+                color: _corTextoSecundario(tema),
+              ),
             ),
             const SizedBox(height: 18),
             ElevatedButton(
@@ -573,7 +630,8 @@ class _AdministradoresScreenState extends State<AdministradoresScreen> {
     required IconData icone,
     required Color cor,
   }) {
-    final cores = Theme.of(context).colorScheme;
+    final tema = Theme.of(context);
+    final cores = tema.colorScheme;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -583,7 +641,11 @@ class _AdministradoresScreenState extends State<AdministradoresScreen> {
       ),
       child: Row(
         children: [
-          Icon(icone, color: cor, size: 27),
+          Icon(
+            icone,
+            color: cor,
+            size: 27,
+          ),
           const SizedBox(width: 10),
           Expanded(
             child: Column(
@@ -600,7 +662,7 @@ class _AdministradoresScreenState extends State<AdministradoresScreen> {
                 Text(
                   titulo,
                   style: TextStyle(
-                    color: cores.onSurfaceVariant,
+                    color: _corTextoSecundario(tema),
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
                   ),
@@ -614,7 +676,8 @@ class _AdministradoresScreenState extends State<AdministradoresScreen> {
   }
 
   Widget _mensagemVazia(String mensagem, IconData icone) {
-    final cores = Theme.of(context).colorScheme;
+    final tema = Theme.of(context);
+    final cores = tema.colorScheme;
 
     return Container(
       padding: const EdgeInsets.all(24),
@@ -624,13 +687,17 @@ class _AdministradoresScreenState extends State<AdministradoresScreen> {
       ),
       child: Column(
         children: [
-          Icon(icone, color: cores.secondary, size: 44),
+          Icon(
+            icone,
+            color: cores.secondary,
+            size: 44,
+          ),
           const SizedBox(height: 12),
           Text(
             mensagem,
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: cores.onSurface,
+              color: _corTextoPrincipal(tema),
               fontSize: 14,
               fontWeight: FontWeight.w600,
             ),
@@ -640,7 +707,9 @@ class _AdministradoresScreenState extends State<AdministradoresScreen> {
     );
   }
 
-  Widget _cartaoAdministrador(Map<String, dynamic> administrador) {
+  Widget _cartaoAdministrador(
+    Map<String, dynamic> administrador,
+  ) {
     final tema = Theme.of(context);
     final cores = tema.colorScheme;
 
@@ -694,7 +763,7 @@ class _AdministradoresScreenState extends State<AdministradoresScreen> {
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 15,
-                          color: cores.onSurface,
+                          color: _corTextoPrincipal(tema),
                         ),
                       ),
 
@@ -703,7 +772,7 @@ class _AdministradoresScreenState extends State<AdministradoresScreen> {
                       Text(
                         administrador['email'] ?? 'E-mail não informado',
                         style: TextStyle(
-                          color: cores.onSurfaceVariant,
+                          color: _corTextoSecundario(tema),
                           fontSize: 12,
                         ),
                       ),
@@ -747,7 +816,8 @@ class _AdministradoresScreenState extends State<AdministradoresScreen> {
                     value: ativo,
                     onChanged: _processando
                         ? null
-                        : (valor) => _alterarStatus(administrador, valor),
+                        : (valor) =>
+                            _alterarStatus(administrador, valor),
                   ),
               ],
             ),
@@ -819,14 +889,14 @@ class _AdministradoresScreenState extends State<AdministradoresScreen> {
           usuario['nome'] ?? 'Nome não informado',
           style: TextStyle(
             fontWeight: FontWeight.bold,
-            color: cores.onSurface,
+            color: _corTextoPrincipal(tema),
             fontSize: 14,
           ),
         ),
         subtitle: Text(
           usuario['email'] ?? 'E-mail não informado',
           style: TextStyle(
-            color: cores.onSurfaceVariant,
+            color: _corTextoSecundario(tema),
             fontSize: 12,
           ),
         ),

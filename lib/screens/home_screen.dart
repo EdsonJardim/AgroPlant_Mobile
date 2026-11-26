@@ -32,7 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final PropriedadeService _propriedadeService = PropriedadeService();
   final AdminService _adminService = AdminService();
 
-  late Future<String?> _perfilAdminFuture;
+  late Future<Map<String, dynamic>?> _perfilAdminFuture;
 
   String? _propriedadeSelecionadaId;
 
@@ -51,23 +51,32 @@ class _HomeScreenState extends State<HomeScreen> {
       );
     }
 
-    setState(() {});
+    setState(() {
+      _perfilAdminFuture = _adminService.consultarPerfilAdmin();
+    });
   }
 
   void _abrirPropriedades() {
     Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => const MinhaPropriedadeScreen()),
+      MaterialPageRoute(
+        builder: (context) => const MinhaPropriedadeScreen(),
+      ),
     );
   }
 
   void _abrirPlanilhas() {
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => const PlanilhasScreen()));
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const PlanilhasScreen(),
+      ),
+    );
   }
 
   void _abrirPainelAdmin(String perfil) {
     Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => AdminScreen(perfilAdmin: perfil)),
+      MaterialPageRoute(
+        builder: (context) => AdminScreen(perfilAdmin: perfil),
+      ),
     );
   }
 
@@ -90,7 +99,11 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             child: Column(
               children: [
-                Icon(Icons.error_outline, size: 42, color: corDetalhe),
+                Icon(
+                  Icons.error_outline,
+                  size: 42,
+                  color: corDetalhe,
+                ),
                 const SizedBox(height: 12),
                 Text(
                   'Não foi possível carregar suas propriedades.',
@@ -114,7 +127,9 @@ class _HomeScreenState extends State<HomeScreen> {
               color: corCartao,
               borderRadius: BorderRadius.circular(24),
             ),
-            child: Center(child: CircularProgressIndicator(color: corDetalhe)),
+            child: Center(
+              child: CircularProgressIndicator(color: corDetalhe),
+            ),
           );
         }
 
@@ -129,7 +144,9 @@ class _HomeScreenState extends State<HomeScreen> {
               borderRadius: BorderRadius.circular(24),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: escuro ? 0.15 : 0.05),
+                  color: Colors.black.withValues(
+                    alpha: escuro ? 0.15 : 0.05,
+                  ),
                   blurRadius: 12,
                   offset: const Offset(0, 4),
                 ),
@@ -137,7 +154,11 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             child: Column(
               children: [
-                Icon(Icons.satellite_alt_outlined, color: corDetalhe, size: 54),
+                Icon(
+                  Icons.satellite_alt_outlined,
+                  color: corDetalhe,
+                  size: 54,
+                ),
                 const SizedBox(height: 16),
                 Text(
                   'Sua propriedade começa aqui!',
@@ -187,7 +208,10 @@ class _HomeScreenState extends State<HomeScreen> {
           orElse: () => propriedades.first,
         );
 
-        final ponto = LatLng(propriedade.latitude, propriedade.longitude);
+        final ponto = LatLng(
+          propriedade.latitude,
+          propriedade.longitude,
+        );
 
         return Container(
           width: double.infinity,
@@ -197,7 +221,9 @@ class _HomeScreenState extends State<HomeScreen> {
             borderRadius: BorderRadius.circular(24),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: escuro ? 0.15 : 0.05),
+                color: Colors.black.withValues(
+                  alpha: escuro ? 0.15 : 0.05,
+                ),
                 blurRadius: 12,
                 offset: const Offset(0, 4),
               ),
@@ -208,7 +234,11 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               Row(
                 children: [
-                  Icon(Icons.landscape_outlined, color: corDetalhe, size: 28),
+                  Icon(
+                    Icons.landscape_outlined,
+                    color: corDetalhe,
+                    size: 28,
+                  ),
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
@@ -234,7 +264,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   items: propriedades.map((item) {
                     return DropdownMenuItem<String>(
                       value: item.id,
-                      child: Text(item.nome, overflow: TextOverflow.ellipsis),
+                      child: Text(
+                        item.nome,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     );
                   }).toList(),
                   onChanged: (id) {
@@ -253,7 +286,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   height: 230,
                   child: FlutterMap(
                     key: ValueKey(propriedade.id),
-                    options: MapOptions(initialCenter: ponto, initialZoom: 14),
+                    options: MapOptions(
+                      initialCenter: ponto,
+                      initialZoom: 14,
+                    ),
                     children: [
                       TileLayer(
                         urlTemplate:
@@ -282,7 +318,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       RichAttributionWidget(
                         attributions: [
-                          TextSourceAttribution('OpenStreetMap contributors'),
+                          TextSourceAttribution(
+                            'OpenStreetMap contributors',
+                          ),
                         ],
                       ),
                     ],
@@ -303,12 +341,19 @@ class _HomeScreenState extends State<HomeScreen> {
                 propriedade.endereco.isEmpty
                     ? 'Endereço não informado'
                     : propriedade.endereco,
-                style: TextStyle(color: corTextoSecundario, height: 1.4),
+                style: TextStyle(
+                  color: corTextoSecundario,
+                  height: 1.4,
+                ),
               ),
               const SizedBox(height: 8),
               Row(
                 children: [
-                  Icon(Icons.square_foot_outlined, size: 19, color: corDetalhe),
+                  Icon(
+                    Icons.square_foot_outlined,
+                    size: 19,
+                    color: corDetalhe,
+                  ),
                   const SizedBox(width: 6),
                   Text(
                     '${propriedade.areaHectares} hectares',
@@ -355,7 +400,8 @@ class _HomeScreenState extends State<HomeScreen> {
     final corFundo = escuro ? const Color(0xFF121A14) : bege;
     final corAppBar = escuro ? const Color(0xFF202B23) : begeClaro;
     final corTexto = escuro ? Colors.white : verde;
-    final corTextoSecundario = escuro ? Colors.white70 : textoSecundario;
+    final corTextoSecundario =
+        escuro ? Colors.white70 : textoSecundario;
     final corCartao = escuro ? const Color(0xFF202B23) : Colors.white;
     final corDetalhe = escuro ? const Color(0xFF78A878) : verde;
 
@@ -367,19 +413,28 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: corAppBar,
         foregroundColor: escuro ? Colors.white : verde,
         actions: [
-          FutureBuilder<String?>(
+          FutureBuilder<Map<String, dynamic>?>(
             future: _perfilAdminFuture,
             builder: (context, snapshot) {
-              final perfil = snapshot.data;
+              final dadosPerfil = snapshot.data;
+              final perfil = dadosPerfil?['role'] as String?;
+              final ativo = dadosPerfil?['ativo'] == true;
 
-              if (perfil == null) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const SizedBox.shrink();
+              }
+
+              if (snapshot.hasError || perfil == null || !ativo) {
                 return const SizedBox.shrink();
               }
 
               return IconButton(
                 tooltip: 'Painel administrativo',
                 onPressed: () => _abrirPainelAdmin(perfil),
-                icon: const Icon(Icons.admin_panel_settings_outlined, size: 28),
+                icon: const Icon(
+                  Icons.admin_panel_settings_outlined,
+                  size: 28,
+                ),
               );
             },
           ),
@@ -387,7 +442,9 @@ class _HomeScreenState extends State<HomeScreen> {
             tooltip: 'Sobre a equipe',
             onPressed: () {
               Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => const SobreScreen()),
+                MaterialPageRoute(
+                  builder: (context) => const SobreScreen(),
+                ),
               );
             },
             icon: const Icon(Icons.groups_outlined, size: 28),
@@ -407,10 +464,15 @@ class _HomeScreenState extends State<HomeScreen> {
             tooltip: 'Perfil',
             onPressed: () {
               Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => const PerfilScreen()),
+                MaterialPageRoute(
+                  builder: (context) => const PerfilScreen(),
+                ),
               );
             },
-            icon: const Icon(Icons.account_circle_outlined, size: 30),
+            icon: const Icon(
+              Icons.account_circle_outlined,
+              size: 30,
+            ),
           ),
           const SizedBox(width: 8),
         ],
@@ -468,7 +530,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   icon: const Icon(Icons.table_chart_outlined),
                   label: const Text(
                     'Acessar planilhas',
-                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
@@ -502,7 +567,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     Text(
                       'Tecnologia e organização para o campo.',
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 12, color: corTextoSecundario),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: corTextoSecundario,
+                      ),
                     ),
                   ],
                 ),

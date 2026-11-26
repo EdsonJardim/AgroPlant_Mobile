@@ -3,221 +3,218 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 class AdminService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   static const String _uidPrincipal =
       'caaZpZoJqZfTwYcsJ1k9AGpxRi53';
 
-  Future<String?> consultarPerfilAdmin() async {
-    final usuario = FirebaseAuth.instance.currentUser;
+  String? get _uidAtual => _auth.currentUser?.uid;
 
-    if (usuario == null) return null;
+  // Consulta o perfil do administrador autenticado.
+  Future<Map<String, dynamic>?> consultarPerfilAdmin() async {
+    final uid = _uidAtual;
 
-    if (usuario.uid == _uidPrincipal) {
-      return 'super_admin';
-    }
+    if (uid == null) return null;
 
     final documento = await _firestore
         .collection('admins')
-        .doc(usuario.uid)
+        .doc(uid)
         .get();
 
     if (!documento.exists) return null;
 
-    final dados = documento.data();
-
-    if (dados == null || dados['ativo'] != true) {
-      return null;
-    }
-
-    if (dados['role'] == 'team_admin') {
-      return 'team_admin';
-    }
-
-    return null;
+    return documento.data();
   }
 
+  // Verifica se o usuário autenticado é administrador.
   Future<bool> isAdmin() async {
-    return await consultarPerfilAdmin() != null;
+    final perfil = await consultarPerfilAdmin();
+
+    return perfil != null && perfil['ativo'] == true;
   }
 
+  // Verifica se o usuário autenticado é o super administrador.
   Future<bool> isSuperAdmin() async {
-    return await consultarPerfilAdmin() == 'super_admin';
+    final uid = _uidAtual;
+
+    if (uid == null) return false;
+
+    if (uid == _uidPrincipal) return true;
+
+    final perfil = await consultarPerfilAdmin();
+
+    return perfil != null &&
+        perfil['ativo'] == true &&
+        perfil['role'] == 'super_admin';
   }
 
-  Future<void> _verificarAdministrador() async {
-    if (!await isAdmin()) {
-      throw Exception(
-        'Acesso permitido somente para administradores.',
-      );
-    }
-  }
-
-  Future<void> _verificarSuperAdmin() async {
-    if (!await isSuperAdmin()) {
-      throw Exception(
-        'Somente o administrador principal pode realizar esta ação.',
-      );
-    }
-  }
-
+  // Lista todos os usuários cadastrados.
   Future<List<Map<String, dynamic>>> listarUsuarios() async {
-    await _verificarAdministrador();
+    if (!await isAdmin()) {
+      throw Exception('Acesso não autorizado.');
+    }
 
-    final resultado = await _firestore
-        .collection('users_public')
-        .get();
+    final usuariosSnapshot =
+        await _firestore.collection('users_public').get();
 
-    final usuarios = await Future.wait(
-      resultado.docs.map((documento) async {
-        final status = await _firestore
-            .collection('account_status')
-            .doc(documento.id)
-            .get();
+    final statusSnapshot =
+        await _firestore.collection('account_status').get();
 
-        final dadosStatus = status.data();
-        final dados = documento.data();
+    final Map<String, bool> statusUsuarios = {};
 
-        return <String, dynamic>{
-          'uid': documento.id,
-          'nome': dados['nome'] ?? 'Nome não informado',
-          'email': dados['email'] ?? 'E-mail não informado',
-          'ativo': dadosStatus == null
-              ? true
-              : dadosStatus['ativo'] == true,
-        };
-      }),
-    );
+    for (final documento in statusSnapshot.docs) {
+      statusUsuarios[documento.id] =
+          documento.data()['ativo'] == true;
+    }
 
-    usuarios.sort(
-      (a, b) => (a['nome'] as String).toLowerCase().compareTo(
-            (b['nome'] as String).toLowerCase(),
-          ),
-    );
+    final List<Map<String, dynamic>> usuarios = [];
+
+    for (final documento in usuariosSnapshot.docs) {
+      final dados = documento.data();
+
+      usuarios.add({
+        'uid': documento.id,
+        'nome': dados['nome'] ?? 'Sem nome',
+        'email': dados['email'] ?? '',
+        'criadoEm': dados['criadoEm'],
+        'atualizadoEm': dados['atualizadoEm'],
+        'ativo': statusUsuarios[documento.id] ?? true,
+      });
+    }
+
+    usuarios.sort((a, b) {
+      return (a['nome'] as String)
+          .toLowerCase()
+          .compareTo((b['nome'] as String).toLowerCase());
+    });
 
     return usuarios;
   }
 
+  // Ativa ou desativa uma conta de usuário.
   Future<void> alterarStatusUsuario({
     required String uid,
     required bool ativo,
   }) async {
-    await _verificarAdministrador();
-
-    final usuarioAtual = FirebaseAuth.instance.currentUser;
-
-    if (usuarioAtual == null) {
-      throw Exception('Administrador não autenticado.');
+    if (!await isAdmin()) {
+      throw Exception('Acesso não autorizado.');
     }
 
-    if (uid == usuarioAtual.uid) {
-      throw Exception(
-        'Você não pode alterar o status da sua própria conta.',
-      );
+    if (uid == _uidAtual) {
+      throw Exception('Você não pode alterar o status da sua própria conta.');
     }
 
-    await _firestore.collection('account_status').doc(uid).set({
+    await _firestore
+        .collection('account_status')
+        .doc(uid)
+        .set({
       'ativo': ativo,
       'atualizadoEm': FieldValue.serverTimestamp(),
     }, SetOptions(merge: true));
   }
 
+  // Lista os administradores cadastrados.
   Future<List<Map<String, dynamic>>> listarAdministradores() async {
-    await _verificarSuperAdmin();
+    if (!await isSuperAdmin()) {
+      throw Exception('Apenas o super administrador pode acessar esta área.');
+    }
 
-    final resultado = await _firestore
+    final snapshot = await _firestore
         .collection('admins')
         .get();
 
-    final administradores = resultado.docs.map((documento) {
+    final List<Map<String, dynamic>> administradores = [];
+
+    for (final documento in snapshot.docs) {
       final dados = documento.data();
 
-      return <String, dynamic>{
+      administradores.add({
         'uid': documento.id,
-        'nome': dados['nome'] ?? 'Nome não informado',
-        'email': dados['email'] ?? 'E-mail não informado',
+        'nome': dados['nome'] ?? 'Sem nome',
+        'email': dados['email'] ?? '',
         'role': dados['role'] ?? 'team_admin',
         'ativo': dados['ativo'] == true,
-      };
-    }).toList();
+        'criadoEm': dados['criadoEm'],
+      });
+    }
 
-    administradores.sort(
-      (a, b) => (a['nome'] as String).toLowerCase().compareTo(
-            (b['nome'] as String).toLowerCase(),
-          ),
-    );
+    administradores.sort((a, b) {
+      return (a['nome'] as String)
+          .toLowerCase()
+          .compareTo((b['nome'] as String).toLowerCase());
+    });
 
     return administradores;
   }
 
+  // Lista usuários que ainda não são administradores.
   Future<List<Map<String, dynamic>>>
       listarUsuariosDisponiveisParaAdmin() async {
-    await _verificarSuperAdmin();
+    if (!await isSuperAdmin()) {
+      throw Exception('Apenas o super administrador pode realizar esta ação.');
+    }
 
-    final resultados = await Future.wait([
-      _firestore.collection('users_public').get(),
-      _firestore.collection('admins').get(),
-    ]);
+    final usuariosSnapshot =
+        await _firestore.collection('users_public').get();
 
-    final usuarios = resultados[0].docs;
-    final administradores = resultados[1].docs;
+    final adminsSnapshot =
+        await _firestore.collection('admins').get();
 
-    final uidsAdministradores = administradores
-        .map((documento) => documento.id)
-        .toSet();
+    final Set<String> uidsAdministradores =
+        adminsSnapshot.docs.map((doc) => doc.id).toSet();
 
-    final disponiveis = usuarios
-        .where((documento) =>
-            documento.id != _uidPrincipal &&
-            !uidsAdministradores.contains(documento.id))
-        .map((documento) {
+    final List<Map<String, dynamic>> disponiveis = [];
+
+    for (final documento in usuariosSnapshot.docs) {
+      if (documento.id == _uidPrincipal) continue;
+
+      if (uidsAdministradores.contains(documento.id)) continue;
+
       final dados = documento.data();
 
-      return <String, dynamic>{
+      disponiveis.add({
         'uid': documento.id,
-        'nome': dados['nome'] ?? 'Nome não informado',
-        'email': dados['email'] ?? 'E-mail não informado',
-      };
-    }).toList();
+        'nome': dados['nome'] ?? 'Sem nome',
+        'email': dados['email'] ?? '',
+      });
+    }
 
-    disponiveis.sort(
-      (a, b) => (a['nome'] as String).toLowerCase().compareTo(
-            (b['nome'] as String).toLowerCase(),
-          ),
-    );
+    disponiveis.sort((a, b) {
+      return (a['nome'] as String)
+          .toLowerCase()
+          .compareTo((b['nome'] as String).toLowerCase());
+    });
 
     return disponiveis;
   }
 
+  // Cadastra um novo administrador da equipe.
   Future<void> cadastrarAdministrador({
     required String uid,
     required String nome,
     required String email,
   }) async {
-    await _verificarSuperAdmin();
-
-    if (uid == _uidPrincipal) {
-      throw Exception(
-        'O administrador principal não pode ser alterado.',
-      );
+    if (!await isSuperAdmin()) {
+      throw Exception('Apenas o super administrador pode cadastrar administradores.');
     }
 
-    final usuario = await _firestore
-        .collection('users_public')
+    if (uid == _uidPrincipal) {
+      throw Exception('O administrador principal não pode ser alterado.');
+    }
+
+    final documento = await _firestore
+        .collection('admins')
         .doc(uid)
         .get();
 
-    if (!usuario.exists) {
-      throw Exception('Usuário não encontrado.');
-    }
-
-    final referenciaAdmin = _firestore.collection('admins').doc(uid);
-    final administradorExistente = await referenciaAdmin.get();
-
-    if (administradorExistente.exists) {
+    if (documento.exists) {
       throw Exception('Este usuário já é administrador.');
     }
 
-    await referenciaAdmin.set({
+    await _firestore
+        .collection('admins')
+        .doc(uid)
+        .set({
       'nome': nome,
       'email': email,
       'role': 'team_admin',
@@ -226,32 +223,41 @@ class AdminService {
     });
   }
 
+  // Ativa ou desativa um administrador da equipe.
   Future<void> alterarStatusAdministrador({
     required String uid,
     required bool ativo,
   }) async {
-    await _verificarSuperAdmin();
-
-    if (uid == _uidPrincipal) {
-      throw Exception(
-        'O administrador principal não pode ser alterado.',
-      );
+    if (!await isSuperAdmin()) {
+      throw Exception('Apenas o super administrador pode alterar administradores.');
     }
 
-    await _firestore.collection('admins').doc(uid).update({
+    if (uid == _uidPrincipal) {
+      throw Exception('O administrador principal não pode ser desativado.');
+    }
+
+    await _firestore
+        .collection('admins')
+        .doc(uid)
+        .update({
       'ativo': ativo,
+      'atualizadoEm': FieldValue.serverTimestamp(),
     });
   }
 
+  // Remove um administrador da equipe.
   Future<void> removerAdministrador(String uid) async {
-    await _verificarSuperAdmin();
-
-    if (uid == _uidPrincipal) {
-      throw Exception(
-        'O administrador principal não pode ser removido.',
-      );
+    if (!await isSuperAdmin()) {
+      throw Exception('Apenas o super administrador pode remover administradores.');
     }
 
-    await _firestore.collection('admins').doc(uid).delete();
+    if (uid == _uidPrincipal) {
+      throw Exception('O administrador principal não pode ser removido.');
+    }
+
+    await _firestore
+        .collection('admins')
+        .doc(uid)
+        .delete();
   }
 }

@@ -27,11 +27,31 @@ O projeto foi desenvolvido com foco em uma interface intuitiva, organização do
 
 ### 👥 Painel administrativo
 
-- Painel exclusivo para gerenciamento administrativo.
-- Listagem de usuários cadastrados.
-- Pesquisa de usuários por nome ou e-mail.
-- Visualização da quantidade de usuários ativos e inativos.
-- Ativação e desativação de contas de usuários.
+O AgroPlant possui um painel administrativo com funcionalidades específicas para consulta de usuários, controle de contas e gerenciamento de administradores.
+
+**Gerenciar usuários**
+
+- Listagem dos usuários cadastrados.
+- Pesquisa por nome ou e-mail.
+- Consulta das informações dos usuários.
+- Visualização do status de cada cadastro.
+- Exibição dos dados de identificação do usuário.
+- Consulta sem controles de ativação ou desativação de contas.
+
+**Contas e acessos**
+
+- Visualização da quantidade total de usuários.
+- Contagem de contas ativas.
+- Contagem de contas inativas.
+- Filtro para visualizar todas as contas.
+- Filtro para visualizar somente contas ativas.
+- Filtro para visualizar somente contas inativas.
+- Ativação de contas de usuários.
+- Desativação de contas de usuários.
+- Atualização da situação das contas.
+
+**Administradores**
+
 - Gerenciamento dos administradores da equipe.
 - Cadastro de usuários como administradores.
 - Ativação e desativação de administradores.
@@ -49,6 +69,7 @@ O projeto foi desenvolvido com foco em uma interface intuitiva, organização do
 
 - Funcionalidades de gerenciamento e acompanhamento de propriedades.
 - Utilização de coordenadas geográficas associadas às propriedades.
+- Exibição da localização das propriedades em mapas.
 - Integração da localização com os recursos meteorológicos.
 
 ### 🌦️ Informações meteorológicas
@@ -118,6 +139,8 @@ O projeto foi desenvolvido com foco em uma interface intuitiva, organização do
 | Shared Preferences | Armazenamento local de preferências |
 | HTTP | Requisições HTTP |
 | Intl | Formatação de datas e informações |
+
+---
 
 ## 🎨 Interface e identidade visual
 
@@ -196,7 +219,8 @@ Os perfis administrativos utilizam os campos `role` e `ativo` para identificar o
 ```text
 account_status/
  └── UID_DO_USUARIO/
-      └── ativo
+      ├── ativo
+      └── atualizadoEm
 ```
 
 **Preferências de notificações:**
