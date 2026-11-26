@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'gerenciar_usuarios_screen.dart';
+import 'contas_acessos_screen.dart';
 import 'administradores_screen.dart';
 import '../widgets/agroplant_app_bar.dart';
 
@@ -9,11 +10,23 @@ class AdminScreen extends StatelessWidget {
 
   const AdminScreen({super.key, required this.perfilAdmin});
 
-  void _abrirGerenciamento(BuildContext context, String titulo) {
+  static const Color _verdeAgroPlant = Color(0xFF174D2A);
+  static const Color _verdeSecundario = Color(0xFF55745D);
+
+  void _abrirGerenciamento(BuildContext context) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => GerenciarUsuariosScreen(titulo: titulo),
+        builder: (_) => const GerenciarUsuariosScreen(),
+      ),
+    );
+  }
+
+  void _abrirContasAcessos(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const ContasAcessosScreen(),
       ),
     );
   }
@@ -32,26 +45,31 @@ class AdminScreen extends StatelessWidget {
     final bool superAdmin = perfilAdmin == 'super_admin';
     final tema = Theme.of(context);
     final cores = tema.colorScheme;
+    final bool temaEscuro = tema.brightness == Brightness.dark;
 
     final corDestaque = cores.primary;
     final corSuperficie = cores.surface;
-    final corTexto = cores.onSurface;
-    final corSecundaria = tema.textTheme.bodyMedium?.color ??
-        cores.onSurface.withValues(alpha: 0.7);
+
+    final corTexto = temaEscuro
+        ? cores.primary
+        : _verdeAgroPlant;
+
+    final corSecundaria = temaEscuro
+        ? cores.onSurface.withValues(alpha: 0.78)
+        : _verdeSecundario;
 
     return Scaffold(
       backgroundColor: tema.scaffoldBackgroundColor,
       appBar: AgroPlantAppBar(
-        backgroundColor: tema.appBarTheme.backgroundColor ??
-            cores.surface,
-        foregroundColor: tema.appBarTheme.foregroundColor ??
-            cores.onSurface,
+        backgroundColor:
+            tema.appBarTheme.backgroundColor ?? cores.surface,
+        foregroundColor: corTexto,
         centerTitle: true,
         title: Text(
           'Painel Administrativo',
           style: TextStyle(
             fontWeight: FontWeight.w600,
-            color: tema.appBarTheme.foregroundColor ?? cores.onSurface,
+            color: corTexto,
           ),
         ),
       ),
@@ -77,9 +95,7 @@ class AdminScreen extends StatelessWidget {
                   ),
                 ),
               ),
-
               const SizedBox(height: 22),
-
               Text(
                 'Administração AgroPlant',
                 textAlign: TextAlign.center,
@@ -89,9 +105,7 @@ class AdminScreen extends StatelessWidget {
                   color: corTexto,
                 ),
               ),
-
               const SizedBox(height: 10),
-
               Text(
                 superAdmin
                     ? 'Administrador principal'
@@ -102,9 +116,7 @@ class AdminScreen extends StatelessWidget {
                   color: corSecundaria,
                 ),
               ),
-
               const SizedBox(height: 8),
-
               Text(
                 'Gerencie usuários, contas e acessos da plataforma.',
                 textAlign: TextAlign.center,
@@ -114,9 +126,7 @@ class AdminScreen extends StatelessWidget {
                   color: corSecundaria,
                 ),
               ),
-
               const SizedBox(height: 34),
-
               Text(
                 'Gerenciamento',
                 style: TextStyle(
@@ -125,38 +135,26 @@ class AdminScreen extends StatelessWidget {
                   color: corTexto,
                 ),
               ),
-
               const SizedBox(height: 16),
-
               _cartao(
                 tema: tema,
                 icone: Icons.people_outline,
                 titulo: 'Gerenciar usuários',
                 descricao:
-                    'Consulte os usuários cadastrados no AgroPlant.',
-                onTap: () => _abrirGerenciamento(
-                  context,
-                  'Gerenciar usuários',
-                ),
+                    'Consulte os usuários cadastrados, seus dados e situação das contas.',
+                onTap: () => _abrirGerenciamento(context),
               ),
-
               const SizedBox(height: 16),
-
               _cartao(
                 tema: tema,
-                icone: Icons.person_off_outlined,
+                icone: Icons.manage_accounts_outlined,
                 titulo: 'Contas e acessos',
                 descricao:
-                    'Consulte e controle a situação das contas dos usuários.',
-                onTap: () => _abrirGerenciamento(
-                  context,
-                  'Contas e acessos',
-                ),
+                    'Visualize os indicadores e controle contas ativas e inativas.',
+                onTap: () => _abrirContasAcessos(context),
               ),
-
               if (superAdmin) ...[
                 const SizedBox(height: 16),
-
                 _cartao(
                   tema: tema,
                   icone: Icons.admin_panel_settings_outlined,
@@ -166,9 +164,7 @@ class AdminScreen extends StatelessWidget {
                   onTap: () => _abrirAdministradores(context),
                 ),
               ],
-
               const SizedBox(height: 24),
-
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -226,6 +222,15 @@ class AdminScreen extends StatelessWidget {
     required VoidCallback onTap,
   }) {
     final cores = tema.colorScheme;
+    final bool temaEscuro = tema.brightness == Brightness.dark;
+
+    final corTexto = temaEscuro
+        ? cores.primary
+        : _verdeAgroPlant;
+
+    final corDescricao = temaEscuro
+        ? cores.onSurface.withValues(alpha: 0.78)
+        : _verdeSecundario;
 
     return Card(
       color: tema.cardTheme.color ?? cores.surface,
@@ -258,9 +263,7 @@ class AdminScreen extends StatelessWidget {
                   size: 30,
                 ),
               ),
-
               const SizedBox(width: 16),
-
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -270,7 +273,7 @@ class AdminScreen extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: cores.onSurface,
+                        color: corTexto,
                       ),
                     ),
                     const SizedBox(height: 7),
@@ -279,15 +282,13 @@ class AdminScreen extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 13,
                         height: 1.4,
-                        color: cores.onSurface.withValues(alpha: 0.7),
+                        color: corDescricao,
                       ),
                     ),
                   ],
                 ),
               ),
-
               const SizedBox(width: 8),
-
               Icon(
                 Icons.chevron_right,
                 color: cores.primary,
