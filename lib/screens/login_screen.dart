@@ -1,9 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
-import 'recuperar_senha_screen.dart';
 import '../services/auth_service.dart';
-import 'home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -79,13 +78,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (!mounted) return;
 
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
-      );
+      context.go('/home');
     } on FirebaseAuthException catch (erro) {
       _mostrarErro(_mensagemErroLogin(erro));
-    } catch (erro) {
+    } catch (erro, stackTrace) {
       debugPrint('Erro no login: $erro');
+      debugPrintStack(stackTrace: stackTrace);
       _mostrarErro('Ocorreu um erro ao realizar o login.');
     } finally {
       if (mounted) {
@@ -99,11 +97,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _recuperarSenha() async {
     if (_carregando) return;
 
-    await Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const RecuperarSenhaScreen(),
-      ),
-    );
+    await context.push('/recuperar-senha');
   }
 
   Future<void> _cadastrar() async {
@@ -131,13 +125,12 @@ class _LoginScreenState extends State<LoginScreen> {
         const SnackBar(content: Text('Conta criada com sucesso!')),
       );
 
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
-      );
+      context.go('/home');
     } on FirebaseAuthException catch (erro) {
       _mostrarErro(_mensagemErroCadastro(erro));
-    } catch (erro) {
+    } catch (erro, stackTrace) {
       debugPrint('Erro no cadastro: $erro');
+      debugPrintStack(stackTrace: stackTrace);
       _mostrarErro('Ocorreu um erro ao criar a conta.');
     } finally {
       if (mounted) {
@@ -160,13 +153,20 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (!mounted) return;
 
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
-      );
-    } on FirebaseAuthException catch (erro) {
+      context.go('/home');
+    } on FirebaseAuthException catch (erro, stackTrace) {
+      debugPrint('========== ERRO FIREBASE AUTH GOOGLE ==========');
+      debugPrint('Código: ${erro.code}');
+      debugPrint('Mensagem: ${erro.message}');
+      debugPrint('Detalhes: $erro');
+      debugPrintStack(stackTrace: stackTrace);
+
       _mostrarErro(_mensagemErroGoogle(erro));
-    } catch (erro) {
-      debugPrint('Erro no Google: $erro');
+    } catch (erro, stackTrace) {
+      debugPrint('========== ERRO GERAL GOOGLE ==========');
+      debugPrint('Tipo: ${erro.runtimeType}');
+      debugPrint('Erro completo: $erro');
+      debugPrintStack(stackTrace: stackTrace);
 
       if (mounted) {
         _mostrarErro('Não foi possível continuar com o Google.');

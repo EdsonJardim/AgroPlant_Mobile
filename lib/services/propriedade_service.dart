@@ -27,6 +27,7 @@ class PropriedadeService {
     return _usuarioRef.collection('propriedades');
   }
 
+  // Observar todas as propriedades do usuário.
   Stream<List<PropriedadeModel>> observarPropriedades() {
     return _propriedadesRef
         .orderBy('criadoEm', descending: true)
@@ -38,11 +39,26 @@ class PropriedadeService {
         );
   }
 
+  // Buscar uma propriedade pelo ID.
+  Future<PropriedadeModel?> buscarPropriedadePorId(
+    String id,
+  ) async {
+    final documento = await _propriedadesRef.doc(id).get();
+
+    if (!documento.exists) {
+      return null;
+    }
+
+    return PropriedadeModel.fromFirestore(documento);
+  }
+
+  // Consultar a quantidade de propriedades cadastradas.
   Future<int> quantidadePropriedades() async {
     final snapshot = await _propriedadesRef.get();
     return snapshot.docs.length;
   }
 
+  // Cadastrar uma nova propriedade.
   Future<void> cadastrarPropriedade({
     required String nome,
     required String endereco,
@@ -84,6 +100,7 @@ class PropriedadeService {
     });
   }
 
+  // Atualizar uma propriedade existente.
   Future<void> atualizarPropriedade(
     PropriedadeModel propriedade,
   ) async {
@@ -93,6 +110,7 @@ class PropriedadeService {
     });
   }
 
+  // Excluir uma propriedade.
   Future<void> excluirPropriedade(String propriedadeId) async {
     final usuarioRef = _usuarioRef;
     final propriedadeRef = _propriedadesRef.doc(propriedadeId);

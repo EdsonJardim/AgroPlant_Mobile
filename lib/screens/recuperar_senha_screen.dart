@@ -1,12 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../widgets/agroplant_app_bar.dart';
+
 class RecuperarSenhaScreen extends StatefulWidget {
   const RecuperarSenhaScreen({super.key});
 
   @override
-  State<RecuperarSenhaScreen> createState() =>
-      _RecuperarSenhaScreenState();
+  State<RecuperarSenhaScreen> createState() => _RecuperarSenhaScreenState();
 }
 
 class _RecuperarSenhaScreenState extends State<RecuperarSenhaScreen> {
@@ -85,20 +86,13 @@ class _RecuperarSenhaScreenState extends State<RecuperarSenhaScreen> {
 
   InputDecoration _decoracaoCampo(bool escuro) {
     final corDestaque = escuro ? verdeClaro : verde;
-    final corFundo = escuro
-        ? const Color(0xFF29372D)
-        : begeClaro;
-    final corBorda = escuro
-        ? const Color(0xFF46594A)
-        : bege;
+    final corFundo = escuro ? const Color(0xFF29372D) : begeClaro;
+    final corBorda = escuro ? const Color(0xFF46594A) : bege;
 
     return InputDecoration(
       labelText: 'E-mail',
       hintText: 'Digite seu e-mail cadastrado',
-      prefixIcon: Icon(
-        Icons.email_outlined,
-        color: corDestaque,
-      ),
+      prefixIcon: Icon(Icons.email_outlined, color: corDestaque),
       filled: true,
       fillColor: corFundo,
       labelStyle: TextStyle(color: corDestaque),
@@ -124,12 +118,8 @@ class _RecuperarSenhaScreenState extends State<RecuperarSenhaScreen> {
   Widget build(BuildContext context) {
     final escuro = Theme.of(context).brightness == Brightness.dark;
 
-    final corFundo = escuro
-        ? const Color(0xFF121A14)
-        : bege;
-    final corCartao = escuro
-        ? const Color(0xFF202B23)
-        : Colors.white;
+    final corFundo = escuro ? const Color(0xFF121A14) : bege;
+    final corCartao = escuro ? const Color(0xFF202B23) : Colors.white;
     final corTexto = escuro ? Colors.white : verde;
     final corTextoSecundario = escuro
         ? Colors.white70
@@ -138,16 +128,14 @@ class _RecuperarSenhaScreenState extends State<RecuperarSenhaScreen> {
 
     return Scaffold(
       backgroundColor: corFundo,
-      appBar: AppBar(
+      appBar: AgroPlantAppBar(
         backgroundColor: corFundo,
         foregroundColor: corTexto,
         elevation: 0,
+        fallbackRoute: '/login',
         title: Text(
           'Recuperar senha',
-          style: TextStyle(
-            color: corTexto,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(color: corTexto, fontWeight: FontWeight.bold),
         ),
       ),
       body: SafeArea(
@@ -168,11 +156,7 @@ class _RecuperarSenhaScreenState extends State<RecuperarSenhaScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Icon(
-                        Icons.lock_reset,
-                        size: 75,
-                        color: corDestaque,
-                      ),
+                      Icon(Icons.lock_reset, size: 75, color: corDestaque),
                       const SizedBox(height: 20),
                       Text(
                         'Esqueceu sua senha?',
@@ -204,9 +188,8 @@ class _RecuperarSenhaScreenState extends State<RecuperarSenhaScreen> {
                             return 'Digite seu e-mail.';
                           }
 
-                          if (!RegExp(
-                            r'^[^@]+@[^@]+\.[^@]+$',
-                          ).hasMatch(valor.trim())) {
+                          if (!RegExp(r'^[^@]+@[^@]+\.[^@]+$')
+                              .hasMatch(valor.trim())) {
                             return 'Digite um e-mail válido.';
                           }
 

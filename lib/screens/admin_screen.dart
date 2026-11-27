@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
-import 'gerenciar_usuarios_screen.dart';
-import 'contas_acessos_screen.dart';
-import 'administradores_screen.dart';
 import '../widgets/agroplant_app_bar.dart';
 
 class AdminScreen extends StatelessWidget {
@@ -14,30 +12,15 @@ class AdminScreen extends StatelessWidget {
   static const Color _verdeSecundario = Color(0xFF55745D);
 
   void _abrirGerenciamento(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => const GerenciarUsuariosScreen(),
-      ),
-    );
+    context.push('/admin/usuarios');
   }
 
   void _abrirContasAcessos(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => const ContasAcessosScreen(),
-      ),
-    );
+    context.push('/admin/acessos');
   }
 
   void _abrirAdministradores(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => const AdministradoresScreen(),
-      ),
-    );
+    context.push('/admin/administradores');
   }
 
   @override
@@ -50,9 +33,7 @@ class AdminScreen extends StatelessWidget {
     final corDestaque = cores.primary;
     final corSuperficie = cores.surface;
 
-    final corTexto = temaEscuro
-        ? cores.primary
-        : _verdeAgroPlant;
+    final corTexto = temaEscuro ? cores.primary : _verdeAgroPlant;
 
     final corSecundaria = temaEscuro
         ? cores.onSurface.withValues(alpha: 0.78)
@@ -61,16 +42,13 @@ class AdminScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: tema.scaffoldBackgroundColor,
       appBar: AgroPlantAppBar(
-        backgroundColor:
-            tema.appBarTheme.backgroundColor ?? cores.surface,
+        backgroundColor: tema.appBarTheme.backgroundColor ?? cores.surface,
         foregroundColor: corTexto,
         centerTitle: true,
+        fallbackRoute: '/home',
         title: Text(
           'Painel Administrativo',
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            color: corTexto,
-          ),
+          style: TextStyle(fontWeight: FontWeight.w600, color: corTexto),
         ),
       ),
       body: SafeArea(
@@ -111,10 +89,7 @@ class AdminScreen extends StatelessWidget {
                     ? 'Administrador principal'
                     : 'Administrador da equipe',
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: corSecundaria,
-                ),
+                style: TextStyle(fontSize: 16, color: corSecundaria),
               ),
               const SizedBox(height: 8),
               Text(
@@ -140,8 +115,7 @@ class AdminScreen extends StatelessWidget {
                 tema: tema,
                 icone: Icons.people_outline,
                 titulo: 'Gerenciar usuários',
-                descricao:
-                    'Consulte os usuários cadastrados, seus dados e situação das contas.',
+                descricao: 'Consulte os usuários cadastrados, seus dados e situação das contas.',
                 onTap: () => _abrirGerenciamento(context),
               ),
               const SizedBox(height: 16),
@@ -149,8 +123,7 @@ class AdminScreen extends StatelessWidget {
                 tema: tema,
                 icone: Icons.manage_accounts_outlined,
                 titulo: 'Contas e acessos',
-                descricao:
-                    'Visualize os indicadores e controle contas ativas e inativas.',
+                descricao: 'Visualize os indicadores e controle contas ativas e inativas.',
                 onTap: () => _abrirContasAcessos(context),
               ),
               if (superAdmin) ...[
@@ -224,9 +197,7 @@ class AdminScreen extends StatelessWidget {
     final cores = tema.colorScheme;
     final bool temaEscuro = tema.brightness == Brightness.dark;
 
-    final corTexto = temaEscuro
-        ? cores.primary
-        : _verdeAgroPlant;
+    final corTexto = temaEscuro ? cores.primary : _verdeAgroPlant;
 
     final corDescricao = temaEscuro
         ? cores.onSurface.withValues(alpha: 0.78)
@@ -237,17 +208,12 @@ class AdminScreen extends StatelessWidget {
       elevation: 1,
       shadowColor: tema.cardTheme.shadowColor,
       margin: EdgeInsets.zero,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(22),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 18,
-            vertical: 22,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 22),
           child: Row(
             children: [
               Container(
@@ -257,11 +223,7 @@ class AdminScreen extends StatelessWidget {
                   color: cores.primary.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(18),
                 ),
-                child: Icon(
-                  icone,
-                  color: cores.primary,
-                  size: 30,
-                ),
+                child: Icon(icone, color: cores.primary, size: 30),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -289,11 +251,7 @@ class AdminScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              Icon(
-                Icons.chevron_right,
-                color: cores.primary,
-                size: 28,
-              ),
+              Icon(Icons.chevron_right, color: cores.primary, size: 28),
             ],
           ),
         ),

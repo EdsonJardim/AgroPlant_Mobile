@@ -70,3 +70,5 @@ key.properties
 # Arquivos temporários do Android e Gradle
 *.hprof
 **/build/reports/
+# Firebase CLI - arquivos locais
+.firebase/

@@ -11,11 +11,9 @@ class GerenciarUsuariosScreen extends StatefulWidget {
       _GerenciarUsuariosScreenState();
 }
 
-class _GerenciarUsuariosScreenState
-    extends State<GerenciarUsuariosScreen> {
+class _GerenciarUsuariosScreenState extends State<GerenciarUsuariosScreen> {
   final AdminService _adminService = AdminService();
-  final TextEditingController _buscaController =
-      TextEditingController();
+  final TextEditingController _buscaController = TextEditingController();
 
   static const Color _verdeAgroPlant = Color(0xFF174D2A);
   static const Color _verdeSecundario = Color(0xFF55745D);
@@ -80,11 +78,9 @@ class _GerenciarUsuariosScreenState
     if (busca.isEmpty) return _usuarios;
 
     return _usuarios.where((usuario) {
-      final nome =
-          (usuario['nome'] ?? '').toString().toLowerCase();
+      final nome = (usuario['nome'] ?? '').toString().toLowerCase();
 
-      final email =
-          (usuario['email'] ?? '').toString().toLowerCase();
+      final email = (usuario['email'] ?? '').toString().toLowerCase();
 
       return nome.contains(busca) || email.contains(busca);
     }).toList();
@@ -99,8 +95,7 @@ class _GerenciarUsuariosScreenState
     final email = usuario['email'] ?? 'E-mail não informado';
     final uid = usuario['uid'] ?? '';
 
-    final corStatus =
-        ativo ? Colors.green.shade700 : cores.error;
+    final corStatus = ativo ? Colors.green.shade700 : cores.error;
 
     showDialog<void>(
       context: context,
@@ -119,30 +114,16 @@ class _GerenciarUsuariosScreenState
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _detalhe(
-                  'Nome',
-                  nome.toString(),
-                  tema,
-                ),
+                _detalhe('Nome', nome.toString(), tema),
                 const SizedBox(height: 14),
-                _detalhe(
-                  'E-mail',
-                  email.toString(),
-                  tema,
-                ),
+                _detalhe('E-mail', email.toString(), tema),
                 const SizedBox(height: 14),
-                _detalhe(
-                  'UID',
-                  uid.toString(),
-                  tema,
-                ),
+                _detalhe('UID', uid.toString(), tema),
                 const SizedBox(height: 18),
                 Row(
                   children: [
                     Icon(
-                      ativo
-                          ? Icons.check_circle
-                          : Icons.block,
+                      ativo ? Icons.check_circle : Icons.block,
                       color: corStatus,
                       size: 20,
                     ),
@@ -161,12 +142,8 @@ class _GerenciarUsuariosScreenState
           ),
           actions: [
             TextButton(
-              onPressed: () =>
-                  Navigator.pop(dialogContext),
-              child: Text(
-                'Fechar',
-                style: TextStyle(color: cores.primary),
-              ),
+              onPressed: () => Navigator.pop(dialogContext),
+              child: Text('Fechar', style: TextStyle(color: cores.primary)),
             ),
           ],
         );
@@ -174,11 +151,7 @@ class _GerenciarUsuariosScreenState
     );
   }
 
-  Widget _detalhe(
-    String titulo,
-    String valor,
-    ThemeData tema,
-  ) {
+  Widget _detalhe(String titulo, String valor, ThemeData tema) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -193,10 +166,7 @@ class _GerenciarUsuariosScreenState
         const SizedBox(height: 4),
         SelectableText(
           valor,
-          style: TextStyle(
-            color: _corTextoPrincipal(tema),
-            fontSize: 14,
-          ),
+          style: TextStyle(color: _corTextoPrincipal(tema), fontSize: 14),
         ),
       ],
     );
@@ -212,16 +182,13 @@ class _GerenciarUsuariosScreenState
     return Scaffold(
       backgroundColor: tema.scaffoldBackgroundColor,
       appBar: AgroPlantAppBar(
-        backgroundColor:
-            tema.appBarTheme.backgroundColor ?? cores.surface,
+        backgroundColor: tema.appBarTheme.backgroundColor ?? cores.surface,
         foregroundColor: corTexto,
         centerTitle: true,
+        fallbackRoute: '/admin',
         title: Text(
           'Gerenciar usuários',
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            color: corTexto,
-          ),
+          style: TextStyle(fontWeight: FontWeight.w600, color: corTexto),
         ),
         actions: [
           IconButton(
@@ -231,9 +198,7 @@ class _GerenciarUsuariosScreenState
           ),
         ],
       ),
-      body: SafeArea(
-        child: _construirConteudo(),
-      ),
+      body: SafeArea(child: _construirConteudo()),
     );
   }
 
@@ -242,11 +207,7 @@ class _GerenciarUsuariosScreenState
     final cores = tema.colorScheme;
 
     if (_carregando) {
-      return Center(
-        child: CircularProgressIndicator(
-          color: cores.primary,
-        ),
-      );
+      return Center(child: CircularProgressIndicator(color: cores.primary));
     }
 
     if (_erro != null) {
@@ -256,11 +217,7 @@ class _GerenciarUsuariosScreenState
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                Icons.error_outline,
-                color: cores.error,
-                size: 48,
-              ),
+              Icon(Icons.error_outline, color: cores.error, size: 48),
               const SizedBox(height: 12),
               Text(
                 'Não foi possível carregar os usuários.',
@@ -274,9 +231,7 @@ class _GerenciarUsuariosScreenState
               Text(
                 _erro!,
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: _corTextoSecundario(tema),
-                ),
+                style: TextStyle(color: _corTextoSecundario(tema)),
               ),
               const SizedBox(height: 16),
               ElevatedButton(
@@ -337,26 +292,16 @@ class _GerenciarUsuariosScreenState
           TextField(
             controller: _buscaController,
             onChanged: (_) => setState(() {}),
-            style: TextStyle(
-              color: _corTextoPrincipal(tema),
-            ),
+            style: TextStyle(color: _corTextoPrincipal(tema)),
             decoration: InputDecoration(
               hintText: 'Buscar por nome ou e-mail',
               hintStyle: TextStyle(
-                color: _corTextoSecundario(tema)
-                    .withValues(alpha: 0.85),
+                color: _corTextoSecundario(tema).withValues(alpha: 0.85),
               ),
-              prefixIcon: Icon(
-                Icons.search,
-                color: cores.primary,
-              ),
+              prefixIcon: Icon(Icons.search, color: cores.primary),
               filled: true,
-              fillColor:
-                  tema.inputDecorationTheme.fillColor ??
-                      cores.surface,
-              contentPadding: const EdgeInsets.symmetric(
-                vertical: 17,
-              ),
+              fillColor: tema.inputDecorationTheme.fillColor ?? cores.surface,
+              contentPadding: const EdgeInsets.symmetric(vertical: 17),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(18),
                 borderSide: BorderSide.none,
@@ -367,10 +312,7 @@ class _GerenciarUsuariosScreenState
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(18),
-                borderSide: BorderSide(
-                  color: cores.secondary,
-                  width: 1.5,
-                ),
+                borderSide: BorderSide(color: cores.secondary, width: 1.5),
               ),
               suffixIcon: _buscaController.text.isNotEmpty
                   ? IconButton(
@@ -378,10 +320,7 @@ class _GerenciarUsuariosScreenState
                         _buscaController.clear();
                         setState(() {});
                       },
-                      icon: Icon(
-                        Icons.close,
-                        color: _corTextoSecundario(tema),
-                      ),
+                      icon: Icon(Icons.close, color: _corTextoSecundario(tema)),
                     )
                   : null,
             ),
@@ -409,8 +348,7 @@ class _GerenciarUsuariosScreenState
     final tema = Theme.of(context);
     final cores = tema.colorScheme;
 
-    final temBusca =
-        _buscaController.text.trim().isNotEmpty;
+    final temBusca = _buscaController.text.trim().isNotEmpty;
 
     return Container(
       padding: const EdgeInsets.all(28),
@@ -420,11 +358,7 @@ class _GerenciarUsuariosScreenState
       ),
       child: Column(
         children: [
-          Icon(
-            Icons.person_search_outlined,
-            color: cores.primary,
-            size: 48,
-          ),
+          Icon(Icons.person_search_outlined, color: cores.primary, size: 48),
           const SizedBox(height: 12),
           Text(
             temBusca
@@ -441,10 +375,7 @@ class _GerenciarUsuariosScreenState
           Text(
             'Tente alterar sua pesquisa ou atualizar a lista.',
             textAlign: TextAlign.center,
-            style: TextStyle(
-              color: _corTextoSecundario(tema),
-              fontSize: 13,
-            ),
+            style: TextStyle(color: _corTextoSecundario(tema), fontSize: 13),
           ),
         ],
       ),
@@ -459,17 +390,14 @@ class _GerenciarUsuariosScreenState
     final nome = usuario['nome'] ?? 'Nome não informado';
     final email = usuario['email'] ?? 'E-mail não informado';
 
-    final corStatus =
-        ativo ? Colors.green.shade700 : cores.error;
+    final corStatus = ativo ? Colors.green.shade700 : cores.error;
 
     return Card(
       color: tema.cardTheme.color ?? cores.surface,
       elevation: 1,
       shadowColor: tema.cardTheme.shadowColor,
       margin: const EdgeInsets.only(bottom: 13),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () => _mostrarDetalhes(usuario),
@@ -525,9 +453,7 @@ class _GerenciarUsuariosScreenState
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(
-                            ativo
-                                ? Icons.check_circle
-                                : Icons.cancel,
+                            ativo ? Icons.check_circle : Icons.cancel,
                             size: 13,
                             color: corStatus,
                           ),
@@ -547,10 +473,7 @@ class _GerenciarUsuariosScreenState
                 ),
               ),
               const SizedBox(width: 8),
-              Icon(
-                Icons.visibility_outlined,
-                color: cores.primary,
-              ),
+              Icon(Icons.visibility_outlined, color: cores.primary),
             ],
           ),
         ),

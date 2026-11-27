@@ -69,20 +69,15 @@ class _EstoqueScreenState extends State<EstoqueScreen> {
   String _unidade = 'kg';
   String _filtro = '';
 
-  bool get _escuro =>
-      Theme.of(context).brightness == Brightness.dark;
+  bool get _escuro => Theme.of(context).brightness == Brightness.dark;
 
-  Color get _corFundo =>
-      _escuro ? const Color(0xFF121A14) : fundo;
+  Color get _corFundo => _escuro ? const Color(0xFF121A14) : fundo;
 
-  Color get _corTexto =>
-      _escuro ? Colors.white : verde;
+  Color get _corTexto => _escuro ? Colors.white : verde;
 
-  Color get _corTextoSecundario =>
-      _escuro ? Colors.white70 : textoSecundario;
+  Color get _corTextoSecundario => _escuro ? Colors.white70 : textoSecundario;
 
-  Color get _corDestaque =>
-      _escuro ? verdeClaro : verde;
+  Color get _corDestaque => _escuro ? verdeClaro : verde;
 
   @override
   void dispose() {
@@ -140,19 +135,11 @@ class _EstoqueScreenState extends State<EstoqueScreen> {
     return double.tryParse(valor);
   }
 
-  InputDecoration _dec(
-    BuildContext context,
-    String label,
-    IconData icone,
-  ) {
+  InputDecoration _dec(BuildContext context, String label, IconData icone) {
     final escuro = Theme.of(context).brightness == Brightness.dark;
     final corDestaque = escuro ? verdeClaro : verde;
-    final corFundo = escuro
-        ? const Color(0xFF29372D)
-        : Colors.white;
-    final corBorda = escuro
-        ? const Color(0xFF46594A)
-        : bege;
+    final corFundo = escuro ? const Color(0xFF29372D) : Colors.white;
+    final corBorda = escuro ? const Color(0xFF46594A) : bege;
 
     return InputDecoration(
       labelText: label,
@@ -160,10 +147,7 @@ class _EstoqueScreenState extends State<EstoqueScreen> {
       prefixIcon: Icon(icone, color: corDestaque),
       filled: true,
       fillColor: corFundo,
-      contentPadding: const EdgeInsets.symmetric(
-        horizontal: 16,
-        vertical: 15,
-      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide(color: corBorda),
@@ -256,9 +240,7 @@ class _EstoqueScreenState extends State<EstoqueScreen> {
         ? item.categoria
         : 'Semente';
 
-    _unidade = _unidades.contains(item.unidade)
-        ? item.unidade
-        : 'kg';
+    _unidade = _unidades.contains(item.unidade) ? item.unidade : 'kg';
   }
 
   String _formatarData(String data) {
@@ -350,17 +332,14 @@ class _EstoqueScreenState extends State<EstoqueScreen> {
       backgroundColor: _corFundo,
       showDragHandle: true,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(24),
-        ),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (modalContext) {
         bool salvando = false;
 
         return StatefulBuilder(
           builder: (context, atualizarModal) {
-            final escuro =
-                Theme.of(context).brightness == Brightness.dark;
+            final escuro = Theme.of(context).brightness == Brightness.dark;
             final corTexto = escuro ? Colors.white : verde;
 
             return Padding(
@@ -449,8 +428,7 @@ class _EstoqueScreenState extends State<EstoqueScreen> {
                             controller: _quantidade,
                             enabled: !salvando,
                             style: TextStyle(color: corTexto),
-                            keyboardType:
-                                const TextInputType.numberWithOptions(
+                            keyboardType: const TextInputType.numberWithOptions(
                               decimal: true,
                             ),
                             decoration: _dec(
@@ -501,8 +479,7 @@ class _EstoqueScreenState extends State<EstoqueScreen> {
                       controller: _preco,
                       enabled: !salvando,
                       style: TextStyle(color: corTexto),
-                      keyboardType:
-                          const TextInputType.numberWithOptions(
+                      keyboardType: const TextInputType.numberWithOptions(
                         decimal: true,
                       ),
                       decoration: _dec(
@@ -593,13 +570,9 @@ class _EstoqueScreenState extends State<EstoqueScreen> {
   Future<void> _excluir(Estoque item) async {
     final escuro = _escuro;
 
-    final corFundo = escuro
-        ? const Color(0xFF202B23)
-        : fundo;
+    final corFundo = escuro ? const Color(0xFF202B23) : fundo;
     final corTexto = escuro ? Colors.white : verde;
-    final corTextoSecundario = escuro
-        ? Colors.white70
-        : textoSecundario;
+    final corTextoSecundario = escuro ? Colors.white70 : textoSecundario;
 
     final confirmar = await showDialog<bool>(
       context: context,
@@ -619,10 +592,7 @@ class _EstoqueScreenState extends State<EstoqueScreen> {
           ),
           content: Text(
             'Deseja realmente excluir "${item.produto}" do estoque? Essa ação não poderá ser desfeita.',
-            style: TextStyle(
-              color: corTextoSecundario,
-              fontSize: 16,
-            ),
+            style: TextStyle(color: corTextoSecundario, fontSize: 16),
           ),
           actionsPadding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
           actions: [
@@ -634,10 +604,7 @@ class _EstoqueScreenState extends State<EstoqueScreen> {
                 icon: const Icon(Icons.close, color: Colors.white),
                 label: const Text(
                   'Cancelar',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: verde,
@@ -655,16 +622,10 @@ class _EstoqueScreenState extends State<EstoqueScreen> {
               height: 56,
               child: ElevatedButton.icon(
                 onPressed: () => Navigator.of(dialogContext).pop(true),
-                icon: const Icon(
-                  Icons.delete_outline,
-                  color: Colors.white,
-                ),
+                icon: const Icon(Icons.delete_outline, color: Colors.white),
                 label: const Text(
                   'Excluir',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red.shade700,
@@ -709,10 +670,8 @@ class _EstoqueScreenState extends State<EstoqueScreen> {
         backgroundColor: verde,
         foregroundColor: Colors.white,
         centerTitle: true,
-        title: Text(
-          'Estoque',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
+        fallbackRoute: '/planilhas',
+        title: Text('Estoque', style: TextStyle(fontWeight: FontWeight.bold)),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _abrirFormulario(),
@@ -737,9 +696,7 @@ class _EstoqueScreenState extends State<EstoqueScreen> {
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(color: verde),
-            );
+            return const Center(child: CircularProgressIndicator(color: verde));
           }
 
           final todos = snapshot.data ?? [];
@@ -764,10 +721,7 @@ class _EstoqueScreenState extends State<EstoqueScreen> {
               const SizedBox(height: 6),
               Text(
                 'Acompanhe seus produtos, quantidades e valores.',
-                style: TextStyle(
-                  color: _corTextoSecundario,
-                  fontSize: 14,
-                ),
+                style: TextStyle(color: _corTextoSecundario, fontSize: 14),
               ),
               const SizedBox(height: 20),
               Row(
@@ -800,24 +754,18 @@ class _EstoqueScreenState extends State<EstoqueScreen> {
                 onChanged: (valor) {
                   setState(() => _filtro = valor);
                 },
-                decoration: _dec(
-                  context,
-                  'Buscar produtos',
-                  Icons.search,
-                ).copyWith(
-                  suffixIcon: _busca.text.isEmpty
-                      ? null
-                      : IconButton(
-                          onPressed: () {
-                            _busca.clear();
-                            setState(() => _filtro = '');
-                          },
-                          icon: Icon(
-                            Icons.close,
-                            color: _corDestaque,
-                          ),
-                        ),
-                ),
+                decoration: _dec(context, 'Buscar produtos', Icons.search)
+                    .copyWith(
+                      suffixIcon: _busca.text.isEmpty
+                          ? null
+                          : IconButton(
+                              onPressed: () {
+                                _busca.clear();
+                                setState(() => _filtro = '');
+                              },
+                              icon: Icon(Icons.close, color: _corDestaque),
+                            ),
+                    ),
               ),
               const SizedBox(height: 20),
               Row(
@@ -838,9 +786,7 @@ class _EstoqueScreenState extends State<EstoqueScreen> {
                       vertical: 6,
                     ),
                     decoration: BoxDecoration(
-                      color: _escuro
-                          ? const Color(0xFF29372D)
-                          : bege,
+                      color: _escuro ? const Color(0xFF29372D) : bege,
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
@@ -857,13 +803,10 @@ class _EstoqueScreenState extends State<EstoqueScreen> {
               if (todos.isEmpty)
                 _EstadoEstoque(
                   mensagem: 'Seu estoque está vazio.',
-                  descricao:
-                      'Adicione produtos para acompanhar suas quantidades e valores.',
+                  descricao: 'Adicione produtos para acompanhar suas quantidades e valores.',
                 )
               else if (lista.isEmpty)
-                _EstadoEstoque(
-                  mensagem: 'Nenhum produto encontrado.',
-                )
+                _EstadoEstoque(mensagem: 'Nenhum produto encontrado.')
               else
                 ...lista.map(
                   (item) => _CardEstoque(
@@ -885,23 +828,14 @@ class _EstadoEstoque extends StatelessWidget {
   final String mensagem;
   final String? descricao;
 
-  const _EstadoEstoque({
-    required this.mensagem,
-    this.descricao,
-  });
+  const _EstadoEstoque({required this.mensagem, this.descricao});
 
   @override
   Widget build(BuildContext context) {
     final escuro = Theme.of(context).brightness == Brightness.dark;
-    final corCartao = escuro
-        ? const Color(0xFF202B23)
-        : Colors.white;
-    final corTexto = escuro
-        ? Colors.white
-        : const Color(0xFF174D2A);
-    final corSecundaria = escuro
-        ? Colors.white70
-        : const Color(0xFF62594B);
+    final corCartao = escuro ? const Color(0xFF202B23) : Colors.white;
+    final corTexto = escuro ? Colors.white : const Color(0xFF174D2A);
+    final corSecundaria = escuro ? Colors.white70 : const Color(0xFF62594B);
 
     return Container(
       padding: const EdgeInsets.all(28),
@@ -909,9 +843,7 @@ class _EstadoEstoque extends StatelessWidget {
         color: corCartao,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: escuro
-              ? const Color(0xFF46594A)
-              : const Color(0xFFE8DCC6),
+          color: escuro ? const Color(0xFF46594A) : const Color(0xFFE8DCC6),
         ),
       ),
       child: Column(
@@ -925,10 +857,7 @@ class _EstadoEstoque extends StatelessWidget {
           Text(
             mensagem,
             textAlign: TextAlign.center,
-            style: TextStyle(
-              color: corTexto,
-              fontWeight: FontWeight.w600,
-            ),
+            style: TextStyle(color: corTexto, fontWeight: FontWeight.w600),
           ),
           if (descricao != null) ...[
             const SizedBox(height: 6),
@@ -960,27 +889,18 @@ class _ResumoEstoque extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final escuro = Theme.of(context).brightness == Brightness.dark;
-    final corCartao = escuro
-        ? const Color(0xFF202B23)
-        : Colors.white;
-    final corTexto = escuro
-        ? Colors.white
-        : const Color(0xFF174D2A);
+    final corCartao = escuro ? const Color(0xFF202B23) : Colors.white;
+    final corTexto = escuro ? Colors.white : const Color(0xFF174D2A);
 
     return Expanded(
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 3),
-        padding: const EdgeInsets.symmetric(
-          horizontal: 5,
-          vertical: 14,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 14),
         decoration: BoxDecoration(
           color: corCartao,
           borderRadius: BorderRadius.circular(15),
           border: Border.all(
-            color: escuro
-                ? const Color(0xFF46594A)
-                : const Color(0xFFE8DCC6),
+            color: escuro ? const Color(0xFF46594A) : const Color(0xFFE8DCC6),
           ),
         ),
         child: Column(
@@ -1037,16 +957,10 @@ class _CardEstoque extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final escuro = Theme.of(context).brightness == Brightness.dark;
-    final corCartao = escuro
-        ? const Color(0xFF202B23)
-        : Colors.white;
+    final corCartao = escuro ? const Color(0xFF202B23) : Colors.white;
     final corTexto = escuro ? Colors.white : verde;
-    final corSecundaria = escuro
-        ? Colors.white70
-        : textoSecundario;
-    final corBorda = escuro
-        ? const Color(0xFF46594A)
-        : bege;
+    final corSecundaria = escuro ? Colors.white70 : textoSecundario;
+    final corBorda = escuro ? const Color(0xFF46594A) : bege;
 
     return Card(
       color: corCartao,
@@ -1093,10 +1007,7 @@ class _CardEstoque extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(
                         item.categoria,
-                        style: TextStyle(
-                          color: corSecundaria,
-                          fontSize: 12,
-                        ),
+                        style: TextStyle(color: corSecundaria, fontSize: 12),
                       ),
                     ],
                   ),
@@ -1108,29 +1019,20 @@ class _CardEstoque extends StatelessWidget {
               titulo: 'Quantidade',
               valor: '${item.quantidade} ${item.unidade}',
             ),
-            _InfoEstoque(
-              titulo: 'Preço unitário',
-              valor: moeda(item.preco),
-            ),
+            _InfoEstoque(titulo: 'Preço unitário', valor: moeda(item.preco)),
             _InfoEstoque(
               titulo: 'Valor total',
               valor: moeda(item.quantidade * item.preco),
               cor: escuro ? verdeClaro : verde,
             ),
-            _InfoEstoque(
-              titulo: 'Data',
-              valor: _formatarData(item.data),
-            ),
+            _InfoEstoque(titulo: 'Data', valor: _formatarData(item.data)),
             const SizedBox(height: 8),
             Row(
               children: [
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: editar,
-                    icon: const Icon(
-                      Icons.edit_outlined,
-                      size: 18,
-                    ),
+                    icon: const Icon(Icons.edit_outlined, size: 18),
                     label: const Text('Editar'),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: escuro ? verdeClaro : verde,
@@ -1146,10 +1048,7 @@ class _CardEstoque extends StatelessWidget {
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: excluir,
-                    icon: const Icon(
-                      Icons.delete_outline,
-                      size: 18,
-                    ),
+                    icon: const Icon(Icons.delete_outline, size: 18),
                     label: const Text('Excluir'),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: Colors.red.shade400,
@@ -1189,11 +1088,7 @@ class _InfoEstoque extends StatelessWidget {
   final String valor;
   final Color? cor;
 
-  const _InfoEstoque({
-    required this.titulo,
-    required this.valor,
-    this.cor,
-  });
+  const _InfoEstoque({required this.titulo, required this.valor, this.cor});
 
   static const verde = Color(0xFF174D2A);
   static const textoSecundario = Color(0xFF62594B);
@@ -1221,8 +1116,7 @@ class _InfoEstoque extends StatelessWidget {
             child: Text(
               valor,
               style: TextStyle(
-                color: cor ??
-                    (escuro ? Colors.white : verde),
+                color: cor ?? (escuro ? Colors.white : verde),
                 fontWeight: FontWeight.w600,
                 fontSize: 13,
               ),

@@ -58,37 +58,25 @@ class _MaquinasScreenState extends State<MaquinasScreen> {
     'Outro',
   ];
 
-  final List<String> _status = [
-    'Operacional',
-    'Em manutenção',
-    'Inativa',
-  ];
+  final List<String> _status = ['Operacional', 'Em manutenção', 'Inativa'];
 
   String _filtro = 'Todas';
 
-  bool get _escuro =>
-      Theme.of(context).brightness == Brightness.dark;
+  bool get _escuro => Theme.of(context).brightness == Brightness.dark;
 
-  Color get _corFundo =>
-      _escuro ? const Color(0xFF121A14) : fundo;
+  Color get _corFundo => _escuro ? const Color(0xFF121A14) : fundo;
 
-  Color get _corCartao =>
-      _escuro ? const Color(0xFF202B23) : Colors.white;
+  Color get _corCartao => _escuro ? const Color(0xFF202B23) : Colors.white;
 
-  Color get _corCampo =>
-      _escuro ? const Color(0xFF29372D) : Colors.white;
+  Color get _corCampo => _escuro ? const Color(0xFF29372D) : Colors.white;
 
-  Color get _corBorda =>
-      _escuro ? const Color(0xFF46594A) : bege;
+  Color get _corBorda => _escuro ? const Color(0xFF46594A) : bege;
 
-  Color get _corTexto =>
-      _escuro ? Colors.white : verde;
+  Color get _corTexto => _escuro ? Colors.white : verde;
 
-  Color get _corTextoSecundario =>
-      _escuro ? Colors.white70 : textoSecundario;
+  Color get _corTextoSecundario => _escuro ? Colors.white70 : textoSecundario;
 
-  Color get _corDestaque =>
-      _escuro ? verdeClaro : verde;
+  Color get _corDestaque => _escuro ? verdeClaro : verde;
 
   @override
   void dispose() {
@@ -233,10 +221,7 @@ class _MaquinasScreenState extends State<MaquinasScreen> {
               }
 
               if (ultimaController.text.isEmpty) {
-                _mensagem(
-                  'Informe a data da última manutenção.',
-                  erro: true,
-                );
+                _mensagem('Informe a data da última manutenção.', erro: true);
                 return;
               }
 
@@ -269,10 +254,7 @@ class _MaquinasScreenState extends State<MaquinasScreen> {
                 }
               } catch (e) {
                 atualizarModal(() => salvando = false);
-                _mensagem(
-                  'Não foi possível salvar a máquina: $e',
-                  erro: true,
-                );
+                _mensagem('Não foi possível salvar a máquina: $e', erro: true);
               }
             }
 
@@ -317,10 +299,7 @@ class _MaquinasScreenState extends State<MaquinasScreen> {
                           onPressed: salvando
                               ? null
                               : () => Navigator.of(modalContext).pop(false),
-                          icon: Icon(
-                            Icons.close,
-                            color: _corTextoSecundario,
-                          ),
+                          icon: Icon(Icons.close, color: _corTextoSecundario),
                         ),
                       ],
                     ),
@@ -496,10 +475,7 @@ class _MaquinasScreenState extends State<MaquinasScreen> {
           ),
           content: Text(
             'Deseja realmente excluir "${maquina.nome}"? Essa ação não poderá ser desfeita.',
-            style: TextStyle(
-              color: _corTextoSecundario,
-              fontSize: 16,
-            ),
+            style: TextStyle(color: _corTextoSecundario, fontSize: 16),
           ),
           actionsPadding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
           actions: [
@@ -511,10 +487,7 @@ class _MaquinasScreenState extends State<MaquinasScreen> {
                 icon: const Icon(Icons.close, color: Colors.white),
                 label: const Text(
                   'Cancelar',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: verde,
@@ -532,16 +505,10 @@ class _MaquinasScreenState extends State<MaquinasScreen> {
               height: 56,
               child: ElevatedButton.icon(
                 onPressed: () => Navigator.of(dialogContext).pop(true),
-                icon: const Icon(
-                  Icons.delete_outline,
-                  color: Colors.white,
-                ),
+                icon: const Icon(Icons.delete_outline, color: Colors.white),
                 label: const Text(
                   'Excluir',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red.shade700,
@@ -576,10 +543,8 @@ class _MaquinasScreenState extends State<MaquinasScreen> {
         backgroundColor: verde,
         foregroundColor: Colors.white,
         centerTitle: true,
-        title: Text(
-          'Máquinas',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
+        fallbackRoute: '/planilhas',
+        title: Text('Máquinas', style: TextStyle(fontWeight: FontWeight.bold)),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _abrirFormulario(),
@@ -631,9 +596,7 @@ class _MaquinasScreenState extends State<MaquinasScreen> {
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(color: verde),
-            );
+            return const Center(child: CircularProgressIndicator(color: verde));
           }
 
           final maquinas = snapshot.data ?? [];
@@ -645,9 +608,7 @@ class _MaquinasScreenState extends State<MaquinasScreen> {
           final manutencao = maquinas
               .where((m) => m.status == 'Em manutenção')
               .length;
-          final inativas = maquinas
-              .where((m) => m.status == 'Inativa')
-              .length;
+          final inativas = maquinas.where((m) => m.status == 'Inativa').length;
 
           return ListView(
             padding: const EdgeInsets.fromLTRB(16, 20, 16, 100),
@@ -663,10 +624,7 @@ class _MaquinasScreenState extends State<MaquinasScreen> {
               const SizedBox(height: 6),
               Text(
                 'Acompanhe seus equipamentos e suas manutenções.',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: _corTextoSecundario,
-                ),
+                style: TextStyle(fontSize: 14, color: _corTextoSecundario),
               ),
               const SizedBox(height: 20),
               Row(
@@ -713,10 +671,7 @@ class _MaquinasScreenState extends State<MaquinasScreen> {
                             _busca.clear();
                             setState(() {});
                           },
-                          icon: Icon(
-                            Icons.close,
-                            color: _corTextoSecundario,
-                          ),
+                          icon: Icon(Icons.close, color: _corTextoSecundario),
                         ),
                   filled: true,
                   fillColor: _corCampo,
@@ -730,10 +685,7 @@ class _MaquinasScreenState extends State<MaquinasScreen> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(
-                      color: _corDestaque,
-                      width: 2,
-                    ),
+                    borderSide: BorderSide(color: _corDestaque, width: 2),
                   ),
                 ),
               ),
@@ -841,34 +793,19 @@ class _MaquinasScreenState extends State<MaquinasScreen> {
       onPressed: () => setState(() => _filtro = titulo),
       style: OutlinedButton.styleFrom(
         backgroundColor: selecionado ? verde : _corCartao,
-        foregroundColor: selecionado
-            ? Colors.white
-            : _corTexto,
-        side: BorderSide(
-          color: selecionado ? verdeClaro : _corBorda,
-        ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        padding: const EdgeInsets.symmetric(
-          horizontal: 13,
-          vertical: 10,
-        ),
+        foregroundColor: selecionado ? Colors.white : _corTexto,
+        side: BorderSide(color: selecionado ? verdeClaro : _corBorda),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 10),
       ),
-      child: Text(
-        titulo,
-        style: const TextStyle(fontWeight: FontWeight.w600),
-      ),
+      child: Text(titulo, style: const TextStyle(fontWeight: FontWeight.w600)),
     );
   }
 
   Widget _estadoVazio(bool semCadastro) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(
-        horizontal: 24,
-        vertical: 36,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 36),
       decoration: BoxDecoration(
         color: _corCartao,
         borderRadius: BorderRadius.circular(18),
@@ -901,10 +838,7 @@ class _MaquinasScreenState extends State<MaquinasScreen> {
                 ? 'Adicione sua primeira máquina para começar.'
                 : 'Tente alterar a busca ou selecionar outro filtro.',
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 14,
-              color: _corTextoSecundario,
-            ),
+            style: TextStyle(fontSize: 14, color: _corTextoSecundario),
           ),
         ],
       ),
@@ -1073,11 +1007,7 @@ class _MaquinasScreenState extends State<MaquinasScreen> {
     );
   }
 
-  Widget _linhaInformacao(
-    IconData icone,
-    String titulo,
-    String valor,
-  ) {
+  Widget _linhaInformacao(IconData icone, String titulo, String valor) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1116,10 +1046,7 @@ class _MaquinasScreenState extends State<MaquinasScreen> {
       prefixIcon: Icon(icone, color: _corDestaque),
       filled: true,
       fillColor: _corCampo,
-      contentPadding: const EdgeInsets.symmetric(
-        horizontal: 14,
-        vertical: 14,
-      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide(color: _corBorda),
@@ -1156,10 +1083,7 @@ class _MaquinasScreenState extends State<MaquinasScreen> {
       onTap: aoTocar,
       maxLines: maxLinhas,
       style: TextStyle(color: _corTexto),
-      decoration: _decoracao(
-        label,
-        icone,
-      ).copyWith(suffixIcon: sufixo),
+      decoration: _decoracao(label, icone).copyWith(suffixIcon: sufixo),
     );
   }
 }

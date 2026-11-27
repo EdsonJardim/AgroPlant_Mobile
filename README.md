@@ -1,16 +1,17 @@
 # 🌱 AgroPlant Mobile
 
-Aplicativo mobile desenvolvido em Flutter com o objetivo de auxiliar no gerenciamento e acompanhamento de propriedades agrícolas, oferecendo recursos de autenticação, informações meteorológicas, gerenciamento de usuários, administração, preferências e notificações.
+Aplicativo desenvolvido em Flutter para gerenciamento agrícola, com integração ao Firebase e suporte para Android e Web.
 
-O AgroPlant busca reunir ferramentas úteis para facilitar o acompanhamento das propriedades rurais e contribuir para uma gestão agrícola mais organizada.
+## 🔗 Links do Projeto
+
+- **Aplicativo Web:** [Acessar AgroPlant](https://agroplant2-2648d.web.app)
+- **Repositório GitHub:** [AgroPlant Mobile](https://github.com/EdsonJardim/AgroPlant_Mobile.git)
+
+## 📱 Sobre o Projeto
+
+O AgroPlant é um aplicativo desenvolvido com Flutter, com o objetivo de oferecer recursos para gerenciamento de propriedades agrícolas, usuários, configurações e outras funcionalidades relacionadas ao ambiente rural.
 
 ---
-
-## 📱 Sobre o projeto
-
-O **AgroPlant Mobile** é um aplicativo desenvolvido utilizando Flutter e Firebase, com integração a serviços externos para disponibilizar informações meteorológicas de acordo com a localização das propriedades cadastradas.
-
-O projeto foi desenvolvido com foco em uma interface intuitiva, organização do código, armazenamento de dados em nuvem, segurança no acesso às informações e compatibilidade com dispositivos Android e iOS.
 
 ## ✨ Funcionalidades implementadas
 
@@ -98,10 +99,26 @@ O AgroPlant possui um painel administrativo com funcionalidades específicas par
 - Gerenciamento das preferências do usuário.
 - Ativação e desativação das notificações.
 - Alternância entre tema claro e escuro.
-- Persistência das preferências no Cloud Firestore.
+- Persistência do tema selecionado utilizando Shared Preferences.
+- Recuperação automática da preferência de tema ao iniciar o aplicativo.
+- Manutenção do tema selecionado após encerrar e executar novamente o projeto, utilizando o mesmo armazenamento do navegador.
+- Armazenamento das preferências de notificações no Cloud Firestore.
 - Acesso à recuperação de senha.
 - Tela de suporte.
 - Exibição do e-mail cadastrado.
+
+### 🎨 Tema claro e escuro
+
+O AgroPlant possui dois modos de apresentação:
+
+- **Tema claro:** utiliza predominantemente as cores verde, bege e branco.
+- **Tema escuro:** utiliza tons de verde e superfícies escuras para proporcionar uma experiência visual adequada em ambientes com pouca iluminação.
+
+O usuário pode alternar entre os temas diretamente na tela de Configurações.
+
+A preferência é armazenada localmente por meio do pacote `Shared Preferences`, permitindo recuperar o tema escolhido quando o aplicativo é iniciado novamente.
+
+No Flutter Web, os dados ficam associados ao armazenamento local da origem utilizada no navegador. Por isso, para manter a mesma preferência durante os testes, recomenda-se executar o projeto utilizando a mesma porta.
 
 ### 🔔 Sistema de notificações
 
@@ -124,8 +141,9 @@ O AgroPlant possui um painel administrativo com funcionalidades específicas par
 
 | Tecnologia | Aplicação |
 |---|---|
-| Flutter | Desenvolvimento mobile |
+| Flutter | Desenvolvimento multiplataforma |
 | Dart | Linguagem de programação |
+| Flutter Web | Execução pelo navegador |
 | Firebase Authentication | Autenticação de usuários |
 | Cloud Firestore | Armazenamento de dados |
 | Firebase Cloud Messaging | Envio de notificações |
@@ -139,6 +157,7 @@ O AgroPlant possui um painel administrativo com funcionalidades específicas par
 | Shared Preferences | Armazenamento local de preferências |
 | HTTP | Requisições HTTP |
 | Intl | Formatação de datas e informações |
+| GoRouter | Gerenciamento de rotas e navegação |
 
 ---
 
@@ -154,6 +173,9 @@ O aplicativo utiliza uma identidade visual baseada em elementos relacionados ao 
 | Verde secundário | `#78A878` |
 | Bege | `#E8DCC6` |
 | Bege claro | `#F7F2E8` |
+| Fundo escuro | `#121A14` |
+| Superfície escura | `#202B23` |
+| Campos no tema escuro | `#29372D` |
 
 O aplicativo possui suporte a tema claro e tema escuro, permitindo que o usuário escolha sua preferência.
 
@@ -237,6 +259,8 @@ users/{uid}/dispositivos/{id}
 
 As operações administrativas são protegidas por regras de segurança do Cloud Firestore, respeitando os níveis de acesso definidos no projeto.
 
+**Observação:** a preferência do tema claro ou escuro é armazenada localmente pelo Shared Preferences, não no Cloud Firestore.
+
 ---
 
 ## 📦 Dependências principais
@@ -258,6 +282,8 @@ flutter_map:
 latlong2:
 http:
 intl:
+go_router:
+fl_chart:
 ```
 
 As versões específicas estão definidas no arquivo `pubspec.yaml`.
@@ -273,7 +299,8 @@ Antes de executar o projeto, é necessário possuir:
 - Flutter SDK instalado.
 - Dart SDK.
 - Android Studio ou ambiente de desenvolvimento compatível.
-- Emulador Android ou dispositivo físico.
+- Google Chrome para execução Web.
+- Emulador Android ou dispositivo físico, caso deseje executar a versão mobile.
 - Conta e projeto configurados no Firebase.
 
 ### 2. Clonar o repositório
@@ -312,19 +339,64 @@ lib/firebase_options.dart
 
 Esse arquivo contém as configurações geradas pelo FlutterFire CLI.
 
-### 6. Executar o aplicativo
+### 6. Executar no Android
+
+Para executar o aplicativo em um dispositivo ou emulador Android:
 
 ```bash
 flutter run
 ```
 
-### 7. Verificar o código
+### 7. Executar no Flutter Web
+
+Para executar o AgroPlant no navegador Google Chrome:
+
+```bash
+flutter run -d chrome --web-port 5000
+```
+
+O aplicativo será disponibilizado em:
+
+```text
+http://localhost:5000
+```
+
+**Importante:** recomenda-se utilizar a mesma porta nas execuções seguintes para manter o acesso ao mesmo armazenamento local do navegador, incluindo a preferência do tema.
+
+### 8. Verificar o código
 
 Para analisar o projeto e identificar possíveis problemas:
 
 ```bash
 flutter analyze
 ```
+
+---
+
+## 🌐 Suporte ao Flutter Web
+
+O AgroPlant também está disponível na versão Web, podendo ser acessado diretamente pelo navegador, sem necessidade de um emulador Android.
+
+**Acesse o aplicativo:** [AgroPlant Web](https://agroplant2-2648d.web.app)
+
+Essa modalidade permite acessar as funcionalidades disponíveis na versão Web sem depender de um emulador Android.
+
+Entre os recursos disponíveis estão:
+
+- Navegação entre as telas.
+- Autenticação de usuários.
+- Integração com Firebase.
+- Gerenciamento de usuários e administração.
+- Configurações do aplicativo.
+- Alternância entre tema claro e escuro.
+- Persistência local da preferência de tema.
+- Acesso aos recursos meteorológicos e de localização, conforme as permissões e compatibilidade do navegador.
+
+Alguns recursos nativos podem apresentar diferenças de comportamento entre Android e Web, dependendo das APIs e permissões disponíveis em cada plataforma.
+
+**Hospedagem:** Firebase Hosting.
+
+**URL pública:** https://agroplant2-2648d.web.app
 
 ---
 

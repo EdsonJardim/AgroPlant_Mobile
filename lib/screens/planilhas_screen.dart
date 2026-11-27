@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../widgets/agroplant_app_bar.dart';
-import 'estoque_screen.dart';
-import 'estatisticas_geral_screen.dart';
-import 'gestao_screen.dart';
-import 'maquinas_screen.dart';
-import 'safra_screen.dart';
 
 class PlanilhasScreen extends StatelessWidget {
   const PlanilhasScreen({super.key});
@@ -34,6 +30,7 @@ class PlanilhasScreen extends StatelessWidget {
         backgroundColor: corAppBar,
         foregroundColor: corDetalhe,
         centerTitle: true,
+        fallbackRoute: '/home',
         title: Text(
           'Planilhas',
           style: TextStyle(
@@ -71,13 +68,7 @@ class PlanilhasScreen extends StatelessWidget {
               descricao: 'Gerencie seus produtos e recursos.',
               corIcone: escuro ? const Color(0xFF9BCB9A) : verde,
               escuro: escuro,
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const EstoqueScreen(),
-                  ),
-                );
-              },
+              onTap: () => context.push('/planilhas/estoque'),
             ),
             const SizedBox(height: 16),
             _PlanilhaCard(
@@ -88,13 +79,7 @@ class PlanilhasScreen extends StatelessWidget {
                   ? const Color(0xFF9BCB9A)
                   : const Color(0xFF47754B),
               escuro: escuro,
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const GestaoScreen(),
-                  ),
-                );
-              },
+              onTap: () => context.push('/planilhas/gestao'),
             ),
             const SizedBox(height: 16),
             _PlanilhaCard(
@@ -105,13 +90,7 @@ class PlanilhasScreen extends StatelessWidget {
                   ? const Color(0xFFB8C98A)
                   : const Color(0xFF6B7D39),
               escuro: escuro,
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const MaquinasScreen(),
-                  ),
-                );
-              },
+              onTap: () => context.push('/planilhas/maquinas'),
             ),
             const SizedBox(height: 16),
             _PlanilhaCard(
@@ -122,13 +101,7 @@ class PlanilhasScreen extends StatelessWidget {
                   ? const Color(0xFF9BCB9A)
                   : verdeClaro,
               escuro: escuro,
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const SafraScreen(),
-                  ),
-                );
-              },
+              onTap: () => context.push('/planilhas/safra'),
             ),
             const SizedBox(height: 16),
             _PlanilhaCard(
@@ -139,14 +112,7 @@ class PlanilhasScreen extends StatelessWidget {
                   ? const Color(0xFF9BCB9A)
                   : verde,
               escuro: escuro,
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        const EstatisticasGeralScreen(),
-                  ),
-                );
-              },
+              onTap: () => context.push('/planilhas/estatisticas'),
             ),
             const SizedBox(height: 28),
             Center(

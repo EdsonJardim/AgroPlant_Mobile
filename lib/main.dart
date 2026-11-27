@@ -1,14 +1,17 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import 'firebase_options.dart';
-import 'screens/login_screen.dart';
+import 'routes/app_router.dart';
 import 'services/notificacao_service.dart';
 import 'theme/theme_controller.dart';
 
 @pragma('vm:entry-point')
-Future<void> tratarNotificacaoEmSegundoPlano(RemoteMessage mensagem) async {
+Future<void> tratarNotificacaoEmSegundoPlano(
+  RemoteMessage mensagem,
+) async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -16,6 +19,8 @@ Future<void> tratarNotificacaoEmSegundoPlano(RemoteMessage mensagem) async {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  GoRouter.optionURLReflectsImperativeAPIs = true;
 
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -27,7 +32,7 @@ Future<void> main() async {
 
   await NotificacaoService.instance.inicializar();
 
-  await ThemeController.carregarTema();
+  await AppThemeController.instance.carregarPreferencia();
 
   runApp(const AgroPlantApp());
 }
@@ -45,13 +50,17 @@ class AgroPlantApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<ThemeMode>(
-      valueListenable: ThemeController.themeMode,
-      builder: (context, modo, child) {
-        return MaterialApp(
+    return AnimatedBuilder(
+      animation: AppThemeController.instance,
+      builder: (context, child) {
+        final modo = AppThemeController.instance.themeMode;
+
+        return MaterialApp.router(
           debugShowCheckedModeBanner: false,
           title: 'AgroPlant',
           themeMode: modo,
+          routerConfig: appRouter,
+
           theme: ThemeData(
             useMaterial3: true,
             brightness: Brightness.light,
@@ -85,7 +94,9 @@ class AgroPlantApp extends StatelessWidget {
               filled: true,
               fillColor: begeClaro,
               labelStyle: const TextStyle(color: verde),
-              hintStyle: const TextStyle(color: Color(0xFF62594B)),
+              hintStyle: const TextStyle(
+                color: Color(0xFF62594B),
+              ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
                 borderSide: const BorderSide(color: bege),
@@ -133,10 +144,13 @@ class AgroPlantApp extends StatelessWidget {
             ),
             snackBarTheme: const SnackBarThemeData(
               backgroundColor: verde,
-              contentTextStyle: TextStyle(color: Colors.white),
+              contentTextStyle: TextStyle(
+                color: Colors.white,
+              ),
               behavior: SnackBarBehavior.floating,
             ),
           ),
+
           darkTheme: ThemeData(
             useMaterial3: true,
             brightness: Brightness.dark,
@@ -169,15 +183,23 @@ class AgroPlantApp extends StatelessWidget {
             inputDecorationTheme: InputDecorationTheme(
               filled: true,
               fillColor: campoEscuro,
-              labelStyle: const TextStyle(color: verdeDetalhe),
-              hintStyle: const TextStyle(color: Colors.white60),
+              labelStyle: const TextStyle(
+                color: verdeDetalhe,
+              ),
+              hintStyle: const TextStyle(
+                color: Colors.white60,
+              ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
-                borderSide: const BorderSide(color: verdeDetalhe),
+                borderSide: const BorderSide(
+                  color: verdeDetalhe,
+                ),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
-                borderSide: const BorderSide(color: verdeDetalhe),
+                borderSide: const BorderSide(
+                  color: verdeDetalhe,
+                ),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
@@ -227,11 +249,12 @@ class AgroPlantApp extends StatelessWidget {
             ),
             snackBarTheme: const SnackBarThemeData(
               backgroundColor: verde,
-              contentTextStyle: TextStyle(color: Colors.white),
+              contentTextStyle: TextStyle(
+                color: Colors.white,
+              ),
               behavior: SnackBarBehavior.floating,
             ),
           ),
-          home: const LoginScreen(),
         );
       },
     );

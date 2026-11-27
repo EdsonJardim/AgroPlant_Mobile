@@ -40,9 +40,7 @@ class _SuporteScreenState extends State<SuporteScreen> {
 
     if (usuario == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Faça login para enviar uma mensagem.'),
-        ),
+        const SnackBar(content: Text('Faça login para enviar uma mensagem.')),
       );
       return;
     }
@@ -57,14 +55,14 @@ class _SuporteScreenState extends State<SuporteScreen> {
           .doc(usuario.uid)
           .collection('atendimentos')
           .add({
-        'assunto': _assuntoController.text.trim(),
-        'mensagem': _mensagemController.text.trim(),
-        'status': 'Pendente',
-        'email': usuario.email ?? '',
-        'criadoEm': FieldValue.serverTimestamp(),
-        'resposta': '',
-        'respondidoEm': null,
-      });
+            'assunto': _assuntoController.text.trim(),
+            'mensagem': _mensagemController.text.trim(),
+            'status': 'Pendente',
+            'email': usuario.email ?? '',
+            'criadoEm': FieldValue.serverTimestamp(),
+            'resposta': '',
+            'respondidoEm': null,
+          });
 
       if (!mounted) return;
 
@@ -72,9 +70,7 @@ class _SuporteScreenState extends State<SuporteScreen> {
       _mensagemController.clear();
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Mensagem enviada com sucesso!'),
-        ),
+        const SnackBar(content: Text('Mensagem enviada com sucesso!')),
       );
 
       DefaultTabController.of(context).animateTo(2);
@@ -134,7 +130,8 @@ class _SuporteScreenState extends State<SuporteScreen> {
       width: double.infinity,
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardTheme.color ??
+        color:
+            Theme.of(context).cardTheme.color ??
             Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(18),
         boxShadow: escuro
@@ -165,16 +162,11 @@ class _SuporteScreenState extends State<SuporteScreen> {
       controller: controller,
       maxLines: maxLines,
       maxLength: maxLength,
-      style: TextStyle(
-        color: escuro ? Colors.white : Colors.black87,
-      ),
+      style: TextStyle(color: escuro ? Colors.white : Colors.black87),
       decoration: InputDecoration(
         labelText: label,
         hintText: hint,
-        prefixIcon: Icon(
-          icone,
-          color: escuro ? verdeClaro : verde,
-        ),
+        prefixIcon: Icon(icone, color: escuro ? verdeClaro : verde),
         filled: true,
         fillColor: escuro ? const Color(0xFF202B23) : begeClaro,
         border: OutlineInputBorder(
@@ -183,9 +175,7 @@ class _SuporteScreenState extends State<SuporteScreen> {
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(
-            color: escuro ? Colors.white12 : bege,
-          ),
+          borderSide: BorderSide(color: escuro ? Colors.white12 : bege),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
@@ -209,62 +199,52 @@ class _SuporteScreenState extends State<SuporteScreen> {
     final perguntas = [
       {
         'pergunta': 'Como cadastrar uma conta no AgroPlant?',
-        'resposta':
-            'Acesse a tela de login, escolha a opção Criar conta e preencha os dados solicitados.',
+        'resposta': 'Acesse a tela de login, escolha a opção Criar conta e preencha os dados solicitados.',
         'icone': Icons.person_add_alt_1_rounded,
       },
       {
         'pergunta': 'Como recuperar minha senha?',
-        'resposta':
-            'Na tela de login ou nas configurações, acesse a opção de recuperar senha e informe seu e-mail cadastrado. Você receberá um link para redefinição.',
+        'resposta': 'Na tela de login ou nas configurações, acesse a opção de recuperar senha e informe seu e-mail cadastrado. Você receberá um link para redefinição.',
         'icone': Icons.lock_reset_rounded,
       },
       {
         'pergunta': 'Como cadastrar uma propriedade?',
-        'resposta':
-            'Acesse Minha Propriedade e utilize a opção de adicionar propriedade. Informe o nome, a área em hectares e os demais dados solicitados.',
+        'resposta': 'Acesse Minha Propriedade e utilize a opção de adicionar propriedade. Informe o nome, a área em hectares e os demais dados solicitados.',
         'icone': Icons.agriculture_rounded,
       },
       {
         'pergunta': 'Como utilizar minha localização GPS?',
-        'resposta':
-            'Ao cadastrar ou editar uma propriedade, utilize a opção de obter localização atual. Permita o acesso à localização quando o Android solicitar.',
+        'resposta': 'Ao cadastrar ou editar uma propriedade, utilize a opção de obter localização atual. Permita o acesso à localização quando o Android solicitar.',
         'icone': Icons.my_location_rounded,
       },
       {
         'pergunta': 'Como funciona o mapa da propriedade?',
-        'resposta':
-            'O mapa permite visualizar a localização da propriedade e selecionar um ponto. Você também pode utilizar a visualização de satélite quando disponível.',
+        'resposta': 'O mapa permite visualizar a localização da propriedade e selecionar um ponto. Você também pode utilizar a visualização de satélite quando disponível.',
         'icone': Icons.map_outlined,
       },
       {
         'pergunta': 'Como consultar o clima da propriedade?',
-        'resposta':
-            'Na tela Minha Propriedade, o AgroPlant consulta as condições meteorológicas utilizando as coordenadas cadastradas de cada propriedade.',
+        'resposta': 'Na tela Minha Propriedade, o AgroPlant consulta as condições meteorológicas utilizando as coordenadas cadastradas de cada propriedade.',
         'icone': Icons.cloud_outlined,
       },
       {
         'pergunta': 'O clima é atualizado automaticamente?',
-        'resposta':
-            'Sim. O cartão de clima realiza uma nova consulta a cada 30 minutos enquanto está ativo. Ao retornar ao aplicativo, ele também verifica se já passou esse intervalo. Você pode atualizar manualmente pelo botão de atualização.',
+        'resposta': 'Sim. O cartão de clima realiza uma nova consulta a cada 30 minutos enquanto está ativo. Ao retornar ao aplicativo, ele também verifica se já passou esse intervalo. Você pode atualizar manualmente pelo botão de atualização.',
         'icone': Icons.refresh_rounded,
       },
       {
         'pergunta': 'Por que o clima pode apresentar diferenças?',
-        'resposta':
-            'As informações são fornecidas por um serviço meteorológico com base nas coordenadas da propriedade. Elas são estimativas da região e podem apresentar diferenças em relação às condições observadas diretamente na fazenda.',
+        'resposta': 'As informações são fornecidas por um serviço meteorológico com base nas coordenadas da propriedade. Elas são estimativas da região e podem apresentar diferenças em relação às condições observadas diretamente na fazenda.',
         'icone': Icons.thermostat_rounded,
       },
       {
         'pergunta': 'Como alterar minhas preferências?',
-        'resposta':
-            'Acesse Configurações para ajustar as opções de notificações e o modo de exibição do aplicativo.',
+        'resposta': 'Acesse Configurações para ajustar as opções de notificações e o modo de exibição do aplicativo.',
         'icone': Icons.settings_outlined,
       },
       {
         'pergunta': 'Como acompanhar meus atendimentos?',
-        'resposta':
-            'Acesse a aba Atendimentos dentro da tela de Suporte. Nela você poderá consultar suas mensagens, seus status e as respostas da equipe quando disponíveis.',
+        'resposta': 'Acesse a aba Atendimentos dentro da tela de Suporte. Nela você poderá consultar suas mensagens, seus status e as respostas da equipe quando disponíveis.',
         'icone': Icons.support_agent_rounded,
       },
     ];
@@ -279,15 +259,10 @@ class _SuporteScreenState extends State<SuporteScreen> {
         ...perguntas.map(
           (item) => _cartao(
             child: ExpansionTile(
-              leading: Icon(
-                item['icone'] as IconData,
-                color: verdeClaro,
-              ),
+              leading: Icon(item['icone'] as IconData, color: verdeClaro),
               title: Text(
                 item['pergunta'] as String,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w600,
-                ),
+                style: const TextStyle(fontWeight: FontWeight.w600),
               ),
               childrenPadding: const EdgeInsets.fromLTRB(18, 0, 18, 18),
               children: [
@@ -546,9 +521,7 @@ class _SuporteScreenState extends State<SuporteScreen> {
                       ),
                       if (resposta is String && resposta.trim().isNotEmpty) ...[
                         const SizedBox(height: 16),
-                        Divider(
-                          color: escuro ? Colors.white12 : bege,
-                        ),
+                        Divider(color: escuro ? Colors.white12 : bege),
                         Row(
                           children: [
                             const Icon(
@@ -607,6 +580,7 @@ class _SuporteScreenState extends State<SuporteScreen> {
         appBar: AgroPlantAppBar(
           backgroundColor: escuro ? const Color(0xFF202B23) : Colors.white,
           foregroundColor: escuro ? Colors.white : verde,
+          fallbackRoute: '/configuracoes',
           title: const Text(
             'Suporte',
             style: TextStyle(fontWeight: FontWeight.bold),
@@ -616,27 +590,14 @@ class _SuporteScreenState extends State<SuporteScreen> {
             labelColor: verdeClaro,
             unselectedLabelColor: Colors.grey,
             tabs: [
-              Tab(
-                icon: Icon(Icons.help_outline_rounded),
-                text: 'Ajuda',
-              ),
-              Tab(
-                icon: Icon(Icons.mail_outline_rounded),
-                text: 'Mensagem',
-              ),
-              Tab(
-                icon: Icon(Icons.history_rounded),
-                text: 'Atendimentos',
-              ),
+              Tab(icon: Icon(Icons.help_outline_rounded), text: 'Ajuda'),
+              Tab(icon: Icon(Icons.mail_outline_rounded), text: 'Mensagem'),
+              Tab(icon: Icon(Icons.history_rounded), text: 'Atendimentos'),
             ],
           ),
         ),
         body: TabBarView(
-          children: [
-            _centralAjuda(),
-            _enviarMensagem(),
-            _meusAtendimentos(),
-          ],
+          children: [_centralAjuda(), _enviarMensagem(), _meusAtendimentos()],
         ),
       ),
     );

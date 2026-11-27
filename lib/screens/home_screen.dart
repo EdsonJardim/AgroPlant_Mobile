@@ -1,14 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
-
-import 'perfil_screen.dart';
-import 'planilhas_screen.dart';
-import 'sobre_screen.dart';
-import 'configuracoes_screen.dart';
-import 'minha_propriedade_screen.dart';
-import 'admin_screen.dart';
 
 import '../models/propriedade.dart';
 import '../services/propriedade_service.dart';
@@ -57,27 +51,15 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _abrirPropriedades() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const MinhaPropriedadeScreen(),
-      ),
-    );
+    context.push('/propriedade');
   }
 
   void _abrirPlanilhas() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const PlanilhasScreen(),
-      ),
-    );
+    context.push('/planilhas');
   }
 
   void _abrirPainelAdmin(String perfil) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => AdminScreen(perfilAdmin: perfil),
-      ),
-    );
+    context.push('/admin');
   }
 
   Widget _construirCartaoPropriedade({
@@ -441,33 +423,21 @@ class _HomeScreenState extends State<HomeScreen> {
           IconButton(
             tooltip: 'Sobre a equipe',
             onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const SobreScreen(),
-                ),
-              );
+              context.push('/sobre');
             },
             icon: const Icon(Icons.groups_outlined, size: 28),
           ),
           IconButton(
             tooltip: 'Configurações',
             onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const ConfiguracoesScreen(),
-                ),
-              );
+              context.push('/configuracoes');
             },
             icon: const Icon(Icons.settings_outlined, size: 28),
           ),
           IconButton(
             tooltip: 'Perfil',
             onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const PerfilScreen(),
-                ),
-              );
+              context.push('/perfil');
             },
             icon: const Icon(
               Icons.account_circle_outlined,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../config/arcgis_config.dart';
@@ -13,8 +14,7 @@ class MinhaPropriedadeScreen extends StatefulWidget {
   const MinhaPropriedadeScreen({super.key});
 
   @override
-  State<MinhaPropriedadeScreen> createState() =>
-      _MinhaPropriedadeScreenState();
+  State<MinhaPropriedadeScreen> createState() => _MinhaPropriedadeScreenState();
 }
 
 class _MinhaPropriedadeScreenState extends State<MinhaPropriedadeScreen> {
@@ -25,33 +25,24 @@ class _MinhaPropriedadeScreenState extends State<MinhaPropriedadeScreen> {
 
   final PropriedadeService _service = PropriedadeService();
 
-  Future<void> _abrirFormulario({PropriedadeModel? propriedade}) async {
-    await Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => PropriedadeFormularioScreen(propriedade: propriedade),
-      ),
-    );
+  void _abrirFormulario({PropriedadeModel? propriedade}) {
+    if (propriedade == null) {
+      context.push('/propriedade/nova');
+    } else {
+      context.push('/propriedade/editar/${propriedade.id}');
+    }
   }
 
   Future<void> _excluirPropriedade(PropriedadeModel propriedade) async {
     final confirmar = await showDialog<bool>(
       context: context,
       builder: (context) {
-        final escuro =
-            Theme.of(context).brightness == Brightness.dark;
+        final escuro = Theme.of(context).brightness == Brightness.dark;
 
-        final corFundo = escuro
-            ? const Color(0xFF202B23)
-            : begeClaro;
-        final corTitulo = escuro
-            ? const Color(0xFFE8F0E8)
-            : verde;
-        final corTexto = escuro
-            ? Colors.white70
-            : textoSecundario;
-        final corCancelar = escuro
-            ? const Color(0xFF78A878)
-            : verde;
+        final corFundo = escuro ? const Color(0xFF202B23) : begeClaro;
+        final corTitulo = escuro ? const Color(0xFFE8F0E8) : verde;
+        final corTexto = escuro ? Colors.white70 : textoSecundario;
+        final corCancelar = escuro ? const Color(0xFF78A878) : verde;
 
         return AlertDialog(
           backgroundColor: corFundo,
@@ -69,11 +60,7 @@ class _MinhaPropriedadeScreenState extends State<MinhaPropriedadeScreen> {
           ),
           content: Text(
             'Deseja realmente excluir "${propriedade.nome}"?',
-            style: TextStyle(
-              color: corTexto,
-              fontSize: 16,
-              height: 1.5,
-            ),
+            style: TextStyle(color: corTexto, fontSize: 16, height: 1.5),
           ),
           actionsPadding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
           actions: [
@@ -146,6 +133,11 @@ class _MinhaPropriedadeScreenState extends State<MinhaPropriedadeScreen> {
     return Scaffold(
       backgroundColor: corFundo,
       appBar: AgroPlantAppBar(
+        backgroundColor: escuro
+            ? const Color(0xFF202B23)
+            : const Color(0xFFF7F2E8),
+        foregroundColor: corTexto,
+        fallbackRoute: '/home',
         title: Text(
           'Minha Propriedade',
           style: TextStyle(
@@ -154,8 +146,6 @@ class _MinhaPropriedadeScreenState extends State<MinhaPropriedadeScreen> {
             fontSize: 18,
           ),
         ),
-        backgroundColor: escuro ? const Color(0xFF202B23) : begeClaro,
-        foregroundColor: corTexto,
       ),
       body: StreamBuilder<List<PropriedadeModel>>(
         stream: _service.observarPropriedades(),
@@ -609,7 +599,7 @@ class _PropriedadeFormularioScreenState
         ),
       );
 
-      Navigator.pop(context);
+      context.pop();
     } catch (e) {
       if (!mounted) return;
 
@@ -637,6 +627,11 @@ class _PropriedadeFormularioScreenState
     return Scaffold(
       backgroundColor: corFundo,
       appBar: AgroPlantAppBar(
+        backgroundColor: escuro
+            ? const Color(0xFF202B23)
+            : const Color(0xFFF7F2E8),
+        foregroundColor: corTexto,
+        fallbackRoute: '/home',
         title: Text(
           _editando ? 'Editar propriedade' : 'Nova propriedade',
           style: TextStyle(
@@ -645,10 +640,6 @@ class _PropriedadeFormularioScreenState
             fontSize: 18,
           ),
         ),
-        backgroundColor: escuro
-            ? const Color(0xFF202B23)
-            : const Color(0xFFF7F2E8),
-        foregroundColor: corTexto,
       ),
       body: Form(
         key: _formKey,
@@ -892,8 +883,8 @@ class _PropriedadeFormularioScreenState
                   _salvando
                       ? 'Salvando...'
                       : _editando
-                          ? 'Salvar alterações'
-                          : 'Cadastrar propriedade',
+                      ? 'Salvar alterações'
+                      : 'Cadastrar propriedade',
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,

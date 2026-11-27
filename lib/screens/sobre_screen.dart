@@ -32,33 +32,21 @@ class SobreScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final escuro = Theme.of(context).brightness == Brightness.dark;
 
-    final corFundo = escuro
-        ? const Color(0xFF121A14)
-        : bege;
+    final corFundo = escuro ? const Color(0xFF121A14) : bege;
 
-    final corAppBar = escuro
-        ? const Color(0xFF202B23)
-        : Colors.white;
+    final corAppBar = escuro ? const Color(0xFF202B23) : Colors.white;
 
-    final corTexto = escuro
-        ? Colors.white
-        : verde;
+    final corTexto = escuro ? Colors.white : verde;
 
     final corTextoSecundario = escuro
         ? Colors.white70
         : const Color(0xFF665D4F);
 
-    final corDetalhe = escuro
-        ? verdeDetalhe
-        : verdeDetalhe;
+    final corDetalhe = escuro ? verdeDetalhe : verdeDetalhe;
 
-    final corIconeFundo = escuro
-        ? const Color(0xFF29372D)
-        : begeClaro;
+    final corIconeFundo = escuro ? const Color(0xFF29372D) : begeClaro;
 
-    final corCartao = escuro
-        ? const Color(0xFF202B23)
-        : Colors.white;
+    final corCartao = escuro ? const Color(0xFF202B23) : Colors.white;
 
     return Scaffold(
       backgroundColor: corFundo,
@@ -67,6 +55,7 @@ class SobreScreen extends StatelessWidget {
         foregroundColor: escuro ? Colors.white : verde,
         showBackButton: true,
         logoWidth: 150,
+        fallbackRoute: '/home',
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -89,11 +78,7 @@ class SobreScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: Icon(
-                  Icons.eco_rounded,
-                  size: 38,
-                  color: corDetalhe,
-                ),
+                child: Icon(Icons.eco_rounded, size: 38, color: corDetalhe),
               ),
               const SizedBox(height: 18),
               Text(
@@ -123,8 +108,8 @@ class SobreScreen extends StatelessWidget {
                   final colunas = largura >= 950
                       ? 3
                       : largura >= 620
-                          ? 2
-                          : 1;
+                      ? 2
+                      : 1;
 
                   final larguraCartao =
                       (largura - (colunas - 1) * 18) / colunas;
@@ -158,9 +143,7 @@ class SobreScreen extends StatelessWidget {
                   vertical: 24,
                 ),
                 decoration: BoxDecoration(
-                  color: escuro
-                      ? const Color(0xFF29372D)
-                      : verde,
+                  color: escuro ? const Color(0xFF29372D) : verde,
                   borderRadius: BorderRadius.circular(24),
                 ),
                 child: const Column(
@@ -196,11 +179,7 @@ class SobreScreen extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.eco_outlined,
-                    color: corDetalhe,
-                    size: 18,
-                  ),
+                  Icon(Icons.eco_outlined, color: corDetalhe, size: 18),
                   const SizedBox(width: 8),
                   Text(
                     'Cultivando inovação',
@@ -245,9 +224,7 @@ class _CartaoIntegrante extends StatelessWidget {
       color: corCartao,
       elevation: 3,
       shadowColor: Colors.black.withValues(alpha: 0.12),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(24),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       clipBehavior: Clip.antiAlias,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
@@ -258,10 +235,7 @@ class _CartaoIntegrante extends StatelessWidget {
               width: 190,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(22),
-                border: Border.all(
-                  color: corDetalhe,
-                  width: 3,
-                ),
+                border: Border.all(color: corDetalhe, width: 3),
               ),
               clipBehavior: Clip.antiAlias,
               child: Image.asset(
@@ -291,10 +265,7 @@ class _CartaoIntegrante extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 14,
-                vertical: 8,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               decoration: BoxDecoration(
                 color: corFuncao,
                 borderRadius: BorderRadius.circular(30),

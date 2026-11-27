@@ -41,29 +41,21 @@ class _GestaoScreenState extends State<GestaoScreen> {
   static const fundo = Color(0xFFF7F2E8);
   static const textoSecundario = Color(0xFF62594B);
 
-  bool get _escuro =>
-      Theme.of(context).brightness == Brightness.dark;
+  bool get _escuro => Theme.of(context).brightness == Brightness.dark;
 
-  Color get _corFundo =>
-      _escuro ? const Color(0xFF121A14) : fundo;
+  Color get _corFundo => _escuro ? const Color(0xFF121A14) : fundo;
 
-  Color get _corCartao =>
-      _escuro ? const Color(0xFF202B23) : Colors.white;
+  Color get _corCartao => _escuro ? const Color(0xFF202B23) : Colors.white;
 
-  Color get _corTexto =>
-      _escuro ? Colors.white : verde;
+  Color get _corTexto => _escuro ? Colors.white : verde;
 
-  Color get _corTextoSecundario =>
-      _escuro ? Colors.white70 : textoSecundario;
+  Color get _corTextoSecundario => _escuro ? Colors.white70 : textoSecundario;
 
-  Color get _corCampo =>
-      _escuro ? const Color(0xFF29372D) : Colors.white;
+  Color get _corCampo => _escuro ? const Color(0xFF29372D) : Colors.white;
 
-  Color get _corBorda =>
-      _escuro ? const Color(0xFF46594A) : bege;
+  Color get _corBorda => _escuro ? const Color(0xFF46594A) : bege;
 
-  Color get _corDestaque =>
-      _escuro ? const Color(0xFF78A878) : verdeClaro;
+  Color get _corDestaque => _escuro ? const Color(0xFF78A878) : verdeClaro;
 
   final List<String> _receitas = [
     'Venda de grãos',
@@ -125,8 +117,7 @@ class _GestaoScreenState extends State<GestaoScreen> {
   String _mes = 'Maio';
   String _filtro = 'Todos';
 
-  List<String> get _categorias =>
-      _tipo == 'Receita' ? _receitas : _despesas;
+  List<String> get _categorias => _tipo == 'Receita' ? _receitas : _despesas;
 
   @override
   void dispose() {
@@ -392,10 +383,7 @@ class _GestaoScreenState extends State<GestaoScreen> {
                       enabled: !salvando,
                       style: TextStyle(color: _corTexto),
                       textCapitalization: TextCapitalization.sentences,
-                      decoration: _dec(
-                        'Descrição',
-                        Icons.description_outlined,
-                      ),
+                      decoration: _dec('Descrição', Icons.description_outlined),
                     ),
                     const SizedBox(height: 12),
                     DropdownButtonFormField<String>(
@@ -404,10 +392,7 @@ class _GestaoScreenState extends State<GestaoScreen> {
                           ? _categoria
                           : _categorias.first,
                       isExpanded: true,
-                      decoration: _dec(
-                        'Categoria',
-                        Icons.category_outlined,
-                      ),
+                      decoration: _dec('Categoria', Icons.category_outlined),
                       dropdownColor: _corCartao,
                       style: TextStyle(color: _corTexto),
                       items: _categorias
@@ -436,10 +421,7 @@ class _GestaoScreenState extends State<GestaoScreen> {
                       keyboardType: const TextInputType.numberWithOptions(
                         decimal: true,
                       ),
-                      decoration: _dec(
-                        'Valor (R\$)',
-                        Icons.attach_money,
-                      ),
+                      decoration: _dec('Valor (R\$)', Icons.attach_money),
                     ),
                     const SizedBox(height: 12),
                     TextField(
@@ -457,18 +439,13 @@ class _GestaoScreenState extends State<GestaoScreen> {
                     DropdownButtonFormField<String>(
                       initialValue: _mes,
                       isExpanded: true,
-                      decoration: _dec(
-                        'Mês',
-                        Icons.date_range_outlined,
-                      ),
+                      decoration: _dec('Mês', Icons.date_range_outlined),
                       dropdownColor: _corCartao,
                       style: TextStyle(color: _corTexto),
                       items: _meses
                           .map(
-                            (mes) => DropdownMenuItem(
-                              value: mes,
-                              child: Text(mes),
-                            ),
+                            (mes) =>
+                                DropdownMenuItem(value: mes, child: Text(mes)),
                           )
                           .toList(),
                       onChanged: salvando
@@ -566,10 +543,7 @@ class _GestaoScreenState extends State<GestaoScreen> {
           ),
           content: Text(
             'Deseja realmente excluir "${item.descricao}"? Essa ação não poderá ser desfeita.',
-            style: TextStyle(
-              color: _corTextoSecundario,
-              fontSize: 16,
-            ),
+            style: TextStyle(color: _corTextoSecundario, fontSize: 16),
           ),
           actionsPadding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
           actions: [
@@ -581,10 +555,7 @@ class _GestaoScreenState extends State<GestaoScreen> {
                 icon: const Icon(Icons.close, color: Colors.white),
                 label: const Text(
                   'Cancelar',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: verde,
@@ -602,16 +573,10 @@ class _GestaoScreenState extends State<GestaoScreen> {
               height: 56,
               child: ElevatedButton.icon(
                 onPressed: () => Navigator.of(dialogContext).pop(true),
-                icon: const Icon(
-                  Icons.delete_outline,
-                  color: Colors.white,
-                ),
+                icon: const Icon(Icons.delete_outline, color: Colors.white),
                 label: const Text(
                   'Excluir',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red.shade700,
@@ -705,10 +670,8 @@ class _GestaoScreenState extends State<GestaoScreen> {
         backgroundColor: verde,
         foregroundColor: Colors.white,
         centerTitle: true,
-        title: Text(
-          'Gestão',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
+        fallbackRoute: '/planilhas',
+        title: Text('Gestão', style: TextStyle(fontWeight: FontWeight.bold)),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _abrirFormulario(),
@@ -730,9 +693,7 @@ class _GestaoScreenState extends State<GestaoScreen> {
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(color: verde),
-            );
+            return const Center(child: CircularProgressIndicator(color: verde));
           }
 
           final todos = snapshot.data ?? [];
@@ -755,10 +716,7 @@ class _GestaoScreenState extends State<GestaoScreen> {
               const SizedBox(height: 6),
               Text(
                 'Acompanhe suas receitas, despesas e saldo.',
-                style: TextStyle(
-                  color: _corTextoSecundario,
-                  fontSize: 14,
-                ),
+                style: TextStyle(color: _corTextoSecundario, fontSize: 14),
               ),
               const SizedBox(height: 20),
               Row(
@@ -788,10 +746,7 @@ class _GestaoScreenState extends State<GestaoScreen> {
                 controller: _busca,
                 onChanged: (_) => setState(() {}),
                 style: TextStyle(color: _corTexto),
-                decoration: _dec(
-                  'Buscar lançamentos',
-                  Icons.search,
-                ).copyWith(
+                decoration: _dec('Buscar lançamentos', Icons.search).copyWith(
                   suffixIcon: _busca.text.isEmpty
                       ? null
                       : IconButton(
@@ -799,10 +754,7 @@ class _GestaoScreenState extends State<GestaoScreen> {
                             _busca.clear();
                             setState(() {});
                           },
-                          icon: Icon(
-                            Icons.close,
-                            color: _corTextoSecundario,
-                          ),
+                          icon: Icon(Icons.close, color: _corTextoSecundario),
                         ),
                 ),
               ),
@@ -928,9 +880,7 @@ class _Resumo extends StatelessWidget {
     final escuro = Theme.of(context).brightness == Brightness.dark;
     final cartao = escuro ? const Color(0xFF202B23) : Colors.white;
     final texto = escuro ? Colors.white : const Color(0xFF174D2A);
-    final borda = escuro
-        ? const Color(0xFF46594A)
-        : const Color(0xFFE8DCC6);
+    final borda = escuro ? const Color(0xFF46594A) : const Color(0xFFE8DCC6);
 
     return Expanded(
       child: Container(
@@ -992,9 +942,7 @@ class _Filtro extends StatelessWidget {
   Widget build(BuildContext context) {
     final escuro = Theme.of(context).brightness == Brightness.dark;
     final cartao = escuro ? const Color(0xFF202B23) : Colors.white;
-    final borda = escuro
-        ? const Color(0xFF46594A)
-        : bege;
+    final borda = escuro ? const Color(0xFF46594A) : bege;
 
     return Expanded(
       child: Padding(
@@ -1006,8 +954,8 @@ class _Filtro extends StatelessWidget {
             foregroundColor: selecionado
                 ? Colors.white
                 : escuro
-                    ? Colors.white
-                    : verde,
+                ? Colors.white
+                : verde,
             side: BorderSide(color: selecionado ? verdeClaro : borda),
             padding: const EdgeInsets.symmetric(vertical: 12),
             shape: RoundedRectangleBorder(
@@ -1016,10 +964,7 @@ class _Filtro extends StatelessWidget {
           ),
           child: Text(
             titulo,
-            style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-            ),
+            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
           ),
         ),
       ),
@@ -1053,12 +998,8 @@ class _CardGestao extends StatelessWidget {
     final escuro = Theme.of(context).brightness == Brightness.dark;
     final cartao = escuro ? const Color(0xFF202B23) : Colors.white;
     final texto = escuro ? Colors.white : verde;
-    final textoSecundario = escuro
-        ? Colors.white70
-        : const Color(0xFF62594B);
-    final borda = escuro
-        ? const Color(0xFF46594A)
-        : bege;
+    final textoSecundario = escuro ? Colors.white70 : const Color(0xFF62594B);
+    final borda = escuro ? const Color(0xFF46594A) : bege;
 
     return Card(
       color: cartao,
@@ -1105,10 +1046,7 @@ class _CardGestao extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(
                         item.categoria,
-                        style: TextStyle(
-                          color: textoSecundario,
-                          fontSize: 12,
-                        ),
+                        style: TextStyle(color: textoSecundario, fontSize: 12),
                       ),
                     ],
                   ),
@@ -1139,14 +1077,8 @@ class _CardGestao extends StatelessWidget {
               valor: moeda(item.valor),
               cor: receita ? verdeClaro : cor,
             ),
-            _Info(
-              titulo: 'Data',
-              valor: formatarDataBrasil(item.data),
-            ),
-            _Info(
-              titulo: 'Mês',
-              valor: item.mes,
-            ),
+            _Info(titulo: 'Data', valor: formatarDataBrasil(item.data)),
+            _Info(titulo: 'Mês', valor: item.mes),
             const SizedBox(height: 10),
             Row(
               children: [
@@ -1193,20 +1125,14 @@ class _Info extends StatelessWidget {
   final String valor;
   final Color? cor;
 
-  const _Info({
-    required this.titulo,
-    required this.valor,
-    this.cor,
-  });
+  const _Info({required this.titulo, required this.valor, this.cor});
 
   static const verde = Color(0xFF174D2A);
 
   @override
   Widget build(BuildContext context) {
     final escuro = Theme.of(context).brightness == Brightness.dark;
-    final texto = escuro
-        ? Colors.white70
-        : const Color(0xFF62594B);
+    final texto = escuro ? Colors.white70 : const Color(0xFF62594B);
     final destaque = escuro ? Colors.white : verde;
 
     return Padding(
@@ -1216,13 +1142,7 @@ class _Info extends StatelessWidget {
         children: [
           SizedBox(
             width: 75,
-            child: Text(
-              titulo,
-              style: TextStyle(
-                color: texto,
-                fontSize: 13,
-              ),
-            ),
+            child: Text(titulo, style: TextStyle(color: texto, fontSize: 13)),
           ),
           Expanded(
             child: Text(

@@ -487,6 +487,7 @@ class _SafraScreenState extends State<SafraScreen> {
         backgroundColor: _verdeSafra,
         foregroundColor: Colors.white,
         centerTitle: true,
+        fallbackRoute: '/planilhas',
         title: Text('Safra', style: TextStyle(fontWeight: FontWeight.bold)),
       ),
       floatingActionButton: FloatingActionButton.extended(

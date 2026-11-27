@@ -1,10 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter/foundation.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  static Future<void>? _googleSignInInicializacao;
 
   DocumentReference<Map<String, dynamic>> _referenciaAutenticacao(
     String uid,
@@ -16,14 +19,12 @@ class AuthService {
         .doc('autenticacao');
   }
 
-  // Verifica se a conta está ativa no Firestore.
   Future<void> _verificarContaAtiva(User usuario) async {
     final documento = await _firestore
         .collection('account_status')
         .doc(usuario.uid)
         .get();
 
-    // Se existir um registro de status, ele precisa estar ativo.
     if (documento.exists) {
       final dados = documento.data();
 
@@ -52,16 +53,11 @@ class AuthService {
     }
   }
 
-  // Cria ou atualiza o perfil privado e o diretório público.
   Future<void> _garantirPerfil(User usuario) async {
     final nome = usuario.displayName ?? 'Usuário';
     final email = usuario.email ?? '';
 
-    // Documento privado do usuário.
-    final referencia = _firestore
-        .collection('users')
-        .doc(usuario.uid);
-
+    final referencia = _firestore.collection('users').doc(usuario.uid);
     final documento = await referencia.get();
 
     final dados = {
@@ -80,10 +76,8 @@ class AuthService {
       await referencia.update(dados);
     }
 
-    // Documento público para o painel administrativo.
-    final referenciaPublica = _firestore
-        .collection('users_public')
-        .doc(usuario.uid);
+    final referenciaPublica =
+        _firestore.collection('users_public').doc(usuario.uid);
 
     final documentoPublico = await referenciaPublica.get();
 
@@ -204,9 +198,8 @@ class AuthService {
       }
     }
 
-    final campo = metodo == 'email'
-        ? 'emailDesativado'
-        : 'googleDesativado';
+    final campo =
+        metodo == 'email' ? 'emailDesativado' : 'googleDesativado';
 
     await _referenciaAutenticacao(usuario.uid).set({
       campo: desativado,
@@ -253,9 +246,8 @@ class AuthService {
 
     await usuario.unlink(provedor);
 
-    final campo = metodo == 'email'
-        ? 'emailDesativado'
-        : 'googleDesativado';
+    final campo =
+        metodo == 'email' ? 'emailDesativado' : 'googleDesativado';
 
     await _referenciaAutenticacao(usuario.uid).set({
       campo: false,
@@ -284,7 +276,6 @@ class AuthService {
     }
   }
 
-  // Login com e-mail e senha.
   Future<User?> login({
     required String email,
     required String senha,
@@ -297,10 +288,8 @@ class AuthService {
     final usuario = credencial.user;
 
     if (usuario != null) {
-      // Primeiro verifica se a conta está ativa.
       await _verificarContaAtiva(usuario);
 
-      // Depois verifica se o método de login está ativo.
       await verificarMetodoAtivo(
         usuario: usuario,
         metodo: 'email',
@@ -312,7 +301,6 @@ class AuthService {
     return usuario;
   }
 
-  // Cadastro com e-mail e senha.
   Future<User?> cadastrar({
     required String nome,
     required String email,
@@ -335,6 +323,7 @@ class AuthService {
         await _verificarContaAtiva(usuarioAtualizado);
 
         await _garantirConfiguracao(usuarioAtualizado.uid);
+
         await _garantirPerfil(usuarioAtualizado);
       }
     }
@@ -342,31 +331,44 @@ class AuthService {
     return _auth.currentUser;
   }
 
-  // Login com Google.
   Future<User?> loginComGoogle() async {
-    final GoogleSignIn googleSignIn = GoogleSignIn.instance;
+    UserCredential resultado;
 
-    await googleSignIn.initialize();
+    if (kIsWeb) {
+      final GoogleAuthProvider provedor = GoogleAuthProvider();
 
-    final GoogleSignInAccount conta =
-        await googleSignIn.authenticate();
+      provedor.addScope('email');
 
-    final GoogleSignInAuthentication googleAuth =
-        conta.authentication;
+      provedor.setCustomParameters({
+        'prompt': 'select_account',
+      });
 
-    final credencial = GoogleAuthProvider.credential(
-      idToken: googleAuth.idToken,
-    );
+      resultado = await _auth.signInWithPopup(provedor);
+    } else {
+      final GoogleSignIn googleSignIn = GoogleSignIn.instance;
 
-    final resultado = await _auth.signInWithCredential(credencial);
+      _googleSignInInicializacao ??= googleSignIn.initialize();
+
+      await _googleSignInInicializacao;
+
+      final GoogleSignInAccount conta =
+          await googleSignIn.authenticate();
+
+      final GoogleSignInAuthentication googleAuth =
+          conta.authentication;
+
+      final credencial = GoogleAuthProvider.credential(
+        idToken: googleAuth.idToken,
+      );
+
+      resultado = await _auth.signInWithCredential(credencial);
+    }
 
     final usuario = resultado.user;
 
     if (usuario != null) {
-      // Primeiro verifica se a conta está ativa.
       await _verificarContaAtiva(usuario);
 
-      // Depois verifica se o método Google está ativo.
       await verificarMetodoAtivo(
         usuario: usuario,
         metodo: 'google',
@@ -378,14 +380,15 @@ class AuthService {
     return usuario;
   }
 
-  // Encerrar sessão.
   Future<void> logout() async {
     await _auth.signOut();
 
-    try {
-      await GoogleSignIn.instance.signOut();
-    } catch (_) {}
+    if (!kIsWeb) {
+      try {
+        await GoogleSignIn.instance.signOut();
+      } catch (e) {
+        debugPrint('Aviso ao encerrar sessão do Google: $e');
+      }
+    }
   }
-
-  User? get usuarioAtual => _auth.currentUser;
 }

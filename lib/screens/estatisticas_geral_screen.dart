@@ -20,8 +20,7 @@ class EstatisticasGeralScreen extends StatefulWidget {
       _EstatisticasGeralScreenState();
 }
 
-class _EstatisticasGeralScreenState
-    extends State<EstatisticasGeralScreen> {
+class _EstatisticasGeralScreenState extends State<EstatisticasGeralScreen> {
   static const Color verde = Color(0xFF174D2A);
   static const Color verdeClaro = Color(0xFF78A878);
   static const Color bege = Color(0xFFE8DCC6);
@@ -60,15 +59,11 @@ class _EstatisticasGeralScreenState
       !_maquinasCarregadas ||
       !_safrasCarregadas;
 
-  double get _totalEstoque => _estoques.fold(
-        0,
-        (total, item) => total + item.quantidade * item.preco,
-      );
+  double get _totalEstoque =>
+      _estoques.fold(0, (total, item) => total + item.quantidade * item.preco);
 
-  double get _totalQuantidadeEstoque => _estoques.fold(
-        0,
-        (total, item) => total + item.quantidade,
-      );
+  double get _totalQuantidadeEstoque =>
+      _estoques.fold(0, (total, item) => total + item.quantidade);
 
   double get _receitas => _gestoes
       .where((item) => item.tipo.trim().toLowerCase() == 'receita')
@@ -97,10 +92,7 @@ class _EstatisticasGeralScreenState
       .length;
 
   int get _safrasDesenvolvimento => _safras
-      .where(
-        (item) =>
-            item.status.trim().toLowerCase() == 'em desenvolvimento',
-      )
+      .where((item) => item.status.trim().toLowerCase() == 'em desenvolvimento')
       .length;
 
   int get _safrasInativas => _safras
@@ -115,53 +107,41 @@ class _EstatisticasGeralScreenState
 
   void _carregarDados() {
     try {
-      _estoqueSubscription = _estoqueService.listarEstoque().listen(
-        (dados) {
-          if (!mounted) return;
+      _estoqueSubscription = _estoqueService.listarEstoque().listen((dados) {
+        if (!mounted) return;
 
-          setState(() {
-            _estoques = dados;
-            _estoqueCarregado = true;
-          });
-        },
-        onError: _tratarErro,
-      );
+        setState(() {
+          _estoques = dados;
+          _estoqueCarregado = true;
+        });
+      }, onError: _tratarErro);
 
-      _gestaoSubscription = _gestaoService.listarGestao().listen(
-        (dados) {
-          if (!mounted) return;
+      _gestaoSubscription = _gestaoService.listarGestao().listen((dados) {
+        if (!mounted) return;
 
-          setState(() {
-            _gestoes = dados;
-            _gestaoCarregado = true;
-          });
-        },
-        onError: _tratarErro,
-      );
+        setState(() {
+          _gestoes = dados;
+          _gestaoCarregado = true;
+        });
+      }, onError: _tratarErro);
 
-      _maquinaSubscription = _maquinaService.observarMaquinas().listen(
-        (dados) {
-          if (!mounted) return;
+      _maquinaSubscription = _maquinaService.observarMaquinas().listen((dados) {
+        if (!mounted) return;
 
-          setState(() {
-            _maquinas = dados;
-            _maquinasCarregadas = true;
-          });
-        },
-        onError: _tratarErro,
-      );
+        setState(() {
+          _maquinas = dados;
+          _maquinasCarregadas = true;
+        });
+      }, onError: _tratarErro);
 
-      _safraSubscription = _safraService.observarSafras().listen(
-        (dados) {
-          if (!mounted) return;
+      _safraSubscription = _safraService.observarSafras().listen((dados) {
+        if (!mounted) return;
 
-          setState(() {
-            _safras = dados;
-            _safrasCarregadas = true;
-          });
-        },
-        onError: _tratarErro,
-      );
+        setState(() {
+          _safras = dados;
+          _safrasCarregadas = true;
+        });
+      }, onError: _tratarErro);
     } catch (erro) {
       _tratarErro(erro);
     }
@@ -233,29 +213,15 @@ class _EstatisticasGeralScreenState
   }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 11),
-      padding: const EdgeInsets.symmetric(
-        horizontal: 13,
-        vertical: 13,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 13),
       decoration: BoxDecoration(
-        color: escuro
-            ? const Color(0xFF29372D)
-            : const Color(0xFFF0F5EF),
+        color: escuro ? const Color(0xFF29372D) : const Color(0xFFF0F5EF),
         borderRadius: BorderRadius.circular(15),
-        border: Border(
-          left: BorderSide(
-            color: cor,
-            width: 4,
-          ),
-        ),
+        border: Border(left: BorderSide(color: cor, width: 4)),
       ),
       child: Row(
         children: [
-          Icon(
-            icone,
-            size: 19,
-            color: cor,
-          ),
+          Icon(icone, size: 19, color: cor),
           const SizedBox(width: 9),
           Expanded(
             child: Text(
@@ -298,15 +264,11 @@ class _EstatisticasGeralScreenState
         color: escuro ? const Color(0xFF202B23) : Colors.white,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: escuro
-              ? const Color(0xFF354C3A)
-              : const Color(0xFFECE7DA),
+          color: escuro ? const Color(0xFF354C3A) : const Color(0xFFECE7DA),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(
-              alpha: escuro ? 0.16 : 0.07,
-            ),
+            color: Colors.black.withValues(alpha: escuro ? 0.16 : 0.07),
             blurRadius: 16,
             offset: const Offset(0, 6),
           ),
@@ -324,11 +286,7 @@ class _EstatisticasGeralScreenState
                   color: corIcone.withValues(alpha: 0.14),
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: Icon(
-                  icone,
-                  color: corIcone,
-                  size: 27,
-                ),
+                child: Icon(icone, color: corIcone, size: 27),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -366,26 +324,19 @@ class _EstatisticasGeralScreenState
   }
 
   Widget _conteudo(bool escuro) {
-    final corFundo = escuro
-        ? const Color(0xFF101A13)
-        : bege;
+    final corFundo = escuro ? const Color(0xFF101A13) : bege;
     final corTexto = escuro ? Colors.white : verde;
     final corDetalhe = escuro ? verdeClaro : verde;
 
     return Scaffold(
       backgroundColor: corFundo,
       appBar: AgroPlantAppBar(
-        backgroundColor: escuro
-            ? const Color(0xFF1E2D23)
-            : begeClaro,
+        backgroundColor: escuro ? const Color(0xFF1E2D23) : begeClaro,
         foregroundColor: corDetalhe,
         centerTitle: true,
         title: Text(
           'Estatísticas',
-          style: TextStyle(
-            color: corTexto,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(color: corTexto, fontWeight: FontWeight.bold),
         ),
       ),
       body: LayoutBuilder(
@@ -395,10 +346,10 @@ class _EstatisticasGeralScreenState
           final int colunas = largura >= 1100
               ? 4
               : largura >= 600
-                  ? 2
-                  : largura >= 380
-                      ? 2
-                      : 1;
+              ? 2
+              : largura >= 380
+              ? 2
+              : 1;
 
           const espacamento = 16.0;
 
@@ -484,9 +435,7 @@ class _EstatisticasGeralScreenState
                           _indicador(
                             titulo: 'Saldo',
                             valor: _dinheiro(_saldo),
-                            cor: _saldo >= 0
-                                ? corReceita
-                                : corDespesa,
+                            cor: _saldo >= 0 ? corReceita : corDespesa,
                             icone: Icons.account_balance_outlined,
                             escuro: escuro,
                           ),
@@ -620,19 +569,12 @@ class _EstatisticasGeralScreenState
                   ),
                   child: Row(
                     children: [
-                      Icon(
-                        Icons.sync,
-                        color: corDetalhe,
-                        size: 21,
-                      ),
+                      Icon(Icons.sync, color: corDetalhe, size: 21),
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
                           'Indicadores atualizados automaticamente pelo Firestore.',
-                          style: TextStyle(
-                            color: corTexto,
-                            fontSize: 12,
-                          ),
+                          style: TextStyle(color: corTexto, fontSize: 12),
                         ),
                       ),
                     ],
@@ -642,11 +584,7 @@ class _EstatisticasGeralScreenState
                 Center(
                   child: Column(
                     children: [
-                      Icon(
-                        Icons.eco_outlined,
-                        color: corDetalhe,
-                        size: 27,
-                      ),
+                      Icon(Icons.eco_outlined, color: corDetalhe, size: 27),
                       const SizedBox(height: 7),
                       Text(
                         'AgroPlant',
@@ -679,15 +617,12 @@ class _EstatisticasGeralScreenState
 
   Widget _telaCarregamento(bool escuro) {
     return Scaffold(
-      backgroundColor: escuro
-          ? const Color(0xFF101A13)
-          : bege,
+      backgroundColor: escuro ? const Color(0xFF101A13) : bege,
       appBar: AgroPlantAppBar(
-        backgroundColor: escuro
-            ? const Color(0xFF1E2D23)
-            : begeClaro,
+        backgroundColor: escuro ? const Color(0xFF1E2D23) : begeClaro,
         foregroundColor: escuro ? verdeClaro : verde,
         centerTitle: true,
+        fallbackRoute: '/planilhas',
         title: Text(
           'Estatísticas',
           style: TextStyle(
@@ -700,15 +635,11 @@ class _EstatisticasGeralScreenState
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CircularProgressIndicator(
-              color: escuro ? verdeClaro : verde,
-            ),
+            CircularProgressIndicator(color: escuro ? verdeClaro : verde),
             const SizedBox(height: 16),
             Text(
               'Carregando estatísticas...',
-              style: TextStyle(
-                color: escuro ? Colors.white : verde,
-              ),
+              style: TextStyle(color: escuro ? Colors.white : verde),
             ),
           ],
         ),
@@ -718,13 +649,9 @@ class _EstatisticasGeralScreenState
 
   Widget _telaErro(bool escuro) {
     return Scaffold(
-      backgroundColor: escuro
-          ? const Color(0xFF101A13)
-          : bege,
+      backgroundColor: escuro ? const Color(0xFF101A13) : bege,
       appBar: AgroPlantAppBar(
-        backgroundColor: escuro
-            ? const Color(0xFF1E2D23)
-            : begeClaro,
+        backgroundColor: escuro ? const Color(0xFF1E2D23) : begeClaro,
         foregroundColor: escuro ? verdeClaro : verde,
         centerTitle: true,
         title: Text(
@@ -741,11 +668,7 @@ class _EstatisticasGeralScreenState
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(
-                Icons.error_outline,
-                color: corDespesa,
-                size: 48,
-              ),
+              const Icon(Icons.error_outline, color: corDespesa, size: 48),
               const SizedBox(height: 14),
               Text(
                 'Não foi possível carregar as estatísticas.',

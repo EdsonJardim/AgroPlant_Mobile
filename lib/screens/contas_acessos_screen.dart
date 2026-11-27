@@ -7,8 +7,7 @@ class ContasAcessosScreen extends StatefulWidget {
   const ContasAcessosScreen({super.key});
 
   @override
-  State<ContasAcessosScreen> createState() =>
-      _ContasAcessosScreenState();
+  State<ContasAcessosScreen> createState() => _ContasAcessosScreenState();
 }
 
 class _ContasAcessosScreenState extends State<ContasAcessosScreen> {
@@ -42,11 +41,9 @@ class _ContasAcessosScreenState extends State<ContasAcessosScreen> {
         : _verdeSecundario;
   }
 
-  int get _totalAtivos =>
-      _usuarios.where((u) => u['ativo'] == true).length;
+  int get _totalAtivos => _usuarios.where((u) => u['ativo'] == true).length;
 
-  int get _totalInativos =>
-      _usuarios.where((u) => u['ativo'] != true).length;
+  int get _totalInativos => _usuarios.where((u) => u['ativo'] != true).length;
 
   List<Map<String, dynamic>> get _usuariosFiltrados {
     if (_filtro == 'Ativas') {
@@ -87,10 +84,7 @@ class _ContasAcessosScreenState extends State<ContasAcessosScreen> {
     }
   }
 
-  Future<void> _alterarStatus(
-    Map<String, dynamic> usuario,
-    bool ativo,
-  ) async {
+  Future<void> _alterarStatus(Map<String, dynamic> usuario, bool ativo) async {
     final uid = usuario['uid']?.toString();
 
     if (uid == null || uid.isEmpty || _uidProcessando != null) {
@@ -100,23 +94,15 @@ class _ContasAcessosScreenState extends State<ContasAcessosScreen> {
     setState(() => _uidProcessando = uid);
 
     try {
-      await _adminService.alterarStatusUsuario(
-        uid: uid,
-        ativo: ativo,
-      );
+      await _adminService.alterarStatusUsuario(uid: uid, ativo: ativo);
 
       if (!mounted) return;
 
       setState(() {
-        final indice = _usuarios.indexWhere(
-          (u) => u['uid'] == uid,
-        );
+        final indice = _usuarios.indexWhere((u) => u['uid'] == uid);
 
         if (indice != -1) {
-          _usuarios[indice] = {
-            ..._usuarios[indice],
-            'ativo': ativo,
-          };
+          _usuarios[indice] = {..._usuarios[indice], 'ativo': ativo};
         }
       });
 
@@ -155,16 +141,13 @@ class _ContasAcessosScreenState extends State<ContasAcessosScreen> {
     return Scaffold(
       backgroundColor: tema.scaffoldBackgroundColor,
       appBar: AgroPlantAppBar(
-        backgroundColor:
-            tema.appBarTheme.backgroundColor ?? cores.surface,
+        backgroundColor: tema.appBarTheme.backgroundColor ?? cores.surface,
         foregroundColor: _corTexto(tema),
         centerTitle: true,
+        fallbackRoute: '/admin',
         title: Text(
           'Contas e acessos',
-          style: TextStyle(
-            color: _corTexto(tema),
-            fontWeight: FontWeight.w600,
-          ),
+          style: TextStyle(color: _corTexto(tema), fontWeight: FontWeight.w600),
         ),
         actions: [
           IconButton(
@@ -174,9 +157,7 @@ class _ContasAcessosScreenState extends State<ContasAcessosScreen> {
           ),
         ],
       ),
-      body: SafeArea(
-        child: _construirConteudo(),
-      ),
+      body: SafeArea(child: _construirConteudo()),
     );
   }
 
@@ -185,9 +166,7 @@ class _ContasAcessosScreenState extends State<ContasAcessosScreen> {
     final cores = tema.colorScheme;
 
     if (_carregando) {
-      return Center(
-        child: CircularProgressIndicator(color: cores.primary),
-      );
+      return Center(child: CircularProgressIndicator(color: cores.primary));
     }
 
     if (_erro != null) {
@@ -392,9 +371,7 @@ class _ContasAcessosScreenState extends State<ContasAcessosScreen> {
       },
       selectedColor: tema.colorScheme.primary.withValues(alpha: 0.18),
       labelStyle: TextStyle(
-        color: selecionado
-            ? _corTexto(tema)
-            : _corSecundaria(tema),
+        color: selecionado ? _corTexto(tema) : _corSecundaria(tema),
         fontWeight: FontWeight.w600,
       ),
       side: BorderSide(
@@ -444,8 +421,7 @@ class _ContasAcessosScreenState extends State<ContasAcessosScreen> {
     final nome = usuario['nome'] ?? 'Nome não informado';
     final email = usuario['email'] ?? 'E-mail não informado';
 
-    final corStatus =
-        ativo ? Colors.green.shade700 : cores.error;
+    final corStatus = ativo ? Colors.green.shade700 : cores.error;
 
     final processando = _uidProcessando == uid;
 
@@ -453,9 +429,7 @@ class _ContasAcessosScreenState extends State<ContasAcessosScreen> {
       color: tema.cardTheme.color ?? cores.surface,
       elevation: 1,
       margin: const EdgeInsets.only(bottom: 13),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Padding(
         padding: const EdgeInsets.all(15),
         child: Row(
@@ -467,11 +441,7 @@ class _ContasAcessosScreenState extends State<ContasAcessosScreen> {
                 color: cores.primary.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(17),
               ),
-              child: Icon(
-                Icons.person_outline,
-                color: cores.primary,
-                size: 29,
-              ),
+              child: Icon(Icons.person_outline, color: cores.primary, size: 29),
             ),
             const SizedBox(width: 13),
             Expanded(
@@ -489,10 +459,7 @@ class _ContasAcessosScreenState extends State<ContasAcessosScreen> {
                   const SizedBox(height: 5),
                   Text(
                     email.toString(),
-                    style: TextStyle(
-                      color: _corSecundaria(tema),
-                      fontSize: 12,
-                    ),
+                    style: TextStyle(color: _corSecundaria(tema), fontSize: 12),
                   ),
                   const SizedBox(height: 9),
                   Container(

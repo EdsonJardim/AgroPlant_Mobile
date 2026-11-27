@@ -1,12 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../services/notificacao_service.dart';
 import '../theme/theme_controller.dart';
 import '../widgets/agroplant_app_bar.dart';
-import 'recuperar_senha_screen.dart';
-import 'suporte_screen.dart';
 
 class ConfiguracoesScreen extends StatefulWidget {
   const ConfiguracoesScreen({super.key});
@@ -27,8 +26,7 @@ class _ConfiguracoesScreenState extends State<ConfiguracoesScreen> {
 
   final usuario = FirebaseAuth.instance.currentUser;
 
-  bool get _modoEscuro =>
-      ThemeController.themeMode.value == ThemeMode.dark;
+  bool get _modoEscuro => AppThemeController.instance.isDarkMode;
 
   @override
   void initState() {
@@ -108,9 +106,9 @@ class _ConfiguracoesScreenState extends State<ConfiguracoesScreen> {
           .collection('configuracoes')
           .doc('preferencias')
           .set({
-        'notificacoesAtivadas': valor,
-        'atualizadoEm': FieldValue.serverTimestamp(),
-      }, SetOptions(merge: true));
+            'notificacoesAtivadas': valor,
+            'atualizadoEm': FieldValue.serverTimestamp(),
+          }, SetOptions(merge: true));
 
       if (!valor) {
         try {
@@ -126,9 +124,7 @@ class _ConfiguracoesScreenState extends State<ConfiguracoesScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              valor
-                  ? 'Notificações ativadas.'
-                  : 'Notificações desativadas.',
+              valor ? 'Notificações ativadas.' : 'Notificações desativadas.',
             ),
           ),
         );
@@ -137,9 +133,7 @@ class _ConfiguracoesScreenState extends State<ConfiguracoesScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text(
-              'Não foi possível atualizar as notificações.',
-            ),
+            content: Text('Não foi possível atualizar as notificações.'),
           ),
         );
       }
@@ -153,7 +147,7 @@ class _ConfiguracoesScreenState extends State<ConfiguracoesScreen> {
   }
 
   Future<void> _alterarModoEscuro(bool valor) async {
-    await ThemeController.alterarTema(valor);
+    await AppThemeController.instance.alterarModoEscuro(valor);
 
     if (mounted) {
       setState(() {});
@@ -161,19 +155,11 @@ class _ConfiguracoesScreenState extends State<ConfiguracoesScreen> {
   }
 
   void _abrirRecuperacaoSenha() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const RecuperarSenhaScreen(),
-      ),
-    );
+    context.push('/recuperar-senha');
   }
 
   void _abrirSuporte() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const SuporteScreen(),
-      ),
-    );
+    context.push('/suporte');
   }
 
   Widget _cartaoOpcao({
@@ -187,17 +173,14 @@ class _ConfiguracoesScreenState extends State<ConfiguracoesScreen> {
     final corTexto = escuro ? Colors.white : verde;
     final corSecundaria = escuro ? Colors.white70 : textoSecundario;
     final corIcone = escuro ? const Color(0xFF78A878) : verde;
-    final corFundoIcone =
-        escuro ? const Color(0xFF29372D) : begeClaro;
+    final corFundoIcone = escuro ? const Color(0xFF29372D) : begeClaro;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 14),
-      padding: const EdgeInsets.symmetric(
-        horizontal: 18,
-        vertical: 16,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardTheme.color ??
+        color:
+            Theme.of(context).cardTheme.color ??
             Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
         boxShadow: escuro
@@ -219,11 +202,7 @@ class _ConfiguracoesScreenState extends State<ConfiguracoesScreen> {
               color: corFundoIcone,
               borderRadius: BorderRadius.circular(15),
             ),
-            child: Icon(
-              icone,
-              color: corIcone,
-              size: 25,
-            ),
+            child: Icon(icone, color: corIcone, size: 25),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -265,33 +244,19 @@ class _ConfiguracoesScreenState extends State<ConfiguracoesScreen> {
     final corTexto = escuro ? Colors.white70 : textoSecundario;
 
     return Scaffold(
-      backgroundColor: escuro
-          ? const Color(0xFF121A14)
-          : bege,
+      backgroundColor: escuro ? const Color(0xFF121A14) : bege,
       appBar: AgroPlantAppBar(
-        backgroundColor: escuro
-            ? const Color(0xFF202B23)
-            : Colors.white,
-        foregroundColor: escuro
-            ? Colors.white
-            : verde,
+        backgroundColor: escuro ? const Color(0xFF202B23) : Colors.white,
+        foregroundColor: escuro ? Colors.white : verde,
         showBackButton: true,
         logoWidth: 150,
+        fallbackRoute: '/home',
       ),
       body: SafeArea(
         child: _carregando
-            ? Center(
-                child: CircularProgressIndicator(
-                  color: corVerde,
-                ),
-              )
+            ? Center(child: CircularProgressIndicator(color: corVerde))
             : SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(
-                  20,
-                  28,
-                  20,
-                  32,
-                ),
+                padding: const EdgeInsets.fromLTRB(20, 28, 20, 32),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -300,9 +265,7 @@ class _ConfiguracoesScreenState extends State<ConfiguracoesScreen> {
                         height: 68,
                         width: 68,
                         decoration: BoxDecoration(
-                          color: escuro
-                              ? const Color(0xFF29372D)
-                              : begeClaro,
+                          color: escuro ? const Color(0xFF29372D) : begeClaro,
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
@@ -352,9 +315,7 @@ class _ConfiguracoesScreenState extends State<ConfiguracoesScreen> {
                       acao: Switch(
                         value: _notificacoesAtivadas,
                         activeThumbColor: verde,
-                        onChanged: _salvando
-                            ? null
-                            : _alterarNotificacoes,
+                        onChanged: _salvando ? null : _alterarNotificacoes,
                       ),
                     ),
                     _cartaoOpcao(
@@ -382,8 +343,7 @@ class _ConfiguracoesScreenState extends State<ConfiguracoesScreen> {
                     _cartaoOpcao(
                       icone: Icons.lock_outline_rounded,
                       titulo: 'Recuperar senha',
-                      descricao:
-                          'Solicite um link para redefinir sua senha.',
+                      descricao: 'Solicite um link para redefinir sua senha.',
                       acao: IconButton(
                         onPressed: _abrirRecuperacaoSenha,
                         icon: Icon(
@@ -406,8 +366,7 @@ class _ConfiguracoesScreenState extends State<ConfiguracoesScreen> {
                     _cartaoOpcao(
                       icone: Icons.email_outlined,
                       titulo: 'E-mail cadastrado',
-                      descricao:
-                          usuario?.email ?? 'E-mail não disponível',
+                      descricao: usuario?.email ?? 'E-mail não disponível',
                       acao: Icon(
                         Icons.verified_user_outlined,
                         color: corVerde,
@@ -427,8 +386,7 @@ class _ConfiguracoesScreenState extends State<ConfiguracoesScreen> {
                     _cartaoOpcao(
                       icone: Icons.eco_outlined,
                       titulo: 'AgroPlant',
-                      descricao:
-                          'Tecnologia e organização para o campo.',
+                      descricao: 'Tecnologia e organização para o campo.',
                       acao: Icon(
                         Icons.info_outline_rounded,
                         color: corVerde,
@@ -438,8 +396,7 @@ class _ConfiguracoesScreenState extends State<ConfiguracoesScreen> {
                     _cartaoOpcao(
                       icone: Icons.support_agent_rounded,
                       titulo: 'Suporte',
-                      descricao:
-                          'Precisa de ajuda? Entre em contato com nossa equipe.',
+                      descricao: 'Precisa de ajuda? Entre em contato com nossa equipe.',
                       acao: IconButton(
                         onPressed: _abrirSuporte,
                         icon: Icon(
